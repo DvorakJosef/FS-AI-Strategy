@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sovereign AI — strategický návrh pro Finshape (v3)</title>
+<title>Sovereign AI — strategický návrh pro Finshape (v4 — full TCO)</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
   :root {
@@ -21,14 +21,7 @@
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
-    background: var(--bg);
-    color: var(--fg);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; -webkit-font-smoothing: antialiased; }
   .container { max-width: 1180px; margin: 0 auto; padding: 32px 24px; }
   header.hero { padding: 56px 0 32px; border-bottom: 1px solid var(--border); }
   header.hero .eyebrow { color: var(--accent); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; font-size: 13px; margin-bottom: 12px; }
@@ -49,7 +42,7 @@
   .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
   .card h3 { margin: 0 0 8px; font-size: 17px; }
   .card .num { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin: 8px 0 4px; }
-  .card .num.small { font-size: 28px; }
+  .card .num.small { font-size: 26px; }
   .card .num.green { color: var(--accent-green); }
   .card .num.amber { color: var(--accent-amber); }
   .card .num.red { color: var(--accent-red); }
@@ -73,23 +66,11 @@
   .badge.red { background: rgba(248, 81, 73, 0.15); color: var(--accent-red); }
   .badge.blue { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
   .badge.purple { background: rgba(163, 113, 247, 0.15); color: var(--accent-purple); }
-  .arch-diagram { background: var(--bg-card-2); border: 1px solid var(--border); border-radius: 12px; padding: 32px; font-family: "SF Mono", Menlo, Monaco, Consolas, monospace; font-size: 13px; line-height: 1.5; }
-  .arch-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 8px auto; text-align: center; max-width: 100%; }
-  .arch-block.gateway { border-color: var(--accent); background: rgba(88, 166, 255, 0.08); }
-  .arch-block.sovereign { border-color: var(--accent-green); background: rgba(63, 185, 80, 0.08); text-align: left; }
-  .arch-block.frontier { border-color: var(--accent-amber); background: rgba(210, 153, 34, 0.08); text-align: left; }
-  .arch-block strong { display: block; font-size: 14px; margin-bottom: 6px; }
-  .arch-block ul { margin: 4px 0 0; padding-left: 20px; font-size: 12px; }
-  .arch-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
-  @media (max-width: 700px) { .arch-row { grid-template-columns: 1fr; } }
-  .arrow { text-align: center; color: var(--fg-muted); font-size: 18px; margin: 2px 0; }
-  .triggers-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  .triggers-table td, .triggers-table th { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); }
-  .triggers-table th { font-size: 12px; text-transform: uppercase; color: var(--fg-muted); letter-spacing: 0.05em; }
-  .roadmap { display: grid; grid-template-columns: 100px 1fr 1fr 1fr 1fr; gap: 4px; font-size: 13px; }
+  .roadmap { display: grid; grid-template-columns: 100px 1fr 1fr 1fr 1fr 1fr; gap: 4px; font-size: 13px; }
   .roadmap .head { color: var(--fg-muted); font-weight: 600; text-transform: uppercase; font-size: 11px; padding: 8px 6px; text-align: center; border-bottom: 1px solid var(--border); }
   .roadmap .label { padding: 14px 8px; color: var(--fg-muted); font-size: 12px; }
   .roadmap .bar { margin: 8px 0; padding: 14px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; line-height: 1.3; }
+  .roadmap .bar.phase0 { background: linear-gradient(90deg, rgba(210, 153, 34, 0.15), rgba(210, 153, 34, 0.25)); color: var(--accent-amber); border: 1px solid rgba(210, 153, 34, 0.3); grid-column: span 1; }
   .roadmap .bar.a { background: linear-gradient(90deg, rgba(88, 166, 255, 0.15), rgba(88, 166, 255, 0.25)); color: var(--accent); border: 1px solid rgba(88, 166, 255, 0.3); grid-column: span 2; }
   .roadmap .bar.b { background: linear-gradient(90deg, rgba(63, 185, 80, 0.15), rgba(63, 185, 80, 0.25)); color: var(--accent-green); border: 1px solid rgba(63, 185, 80, 0.3); grid-column: span 4; }
   .roadmap .bar.c { background: linear-gradient(90deg, rgba(163, 113, 247, 0.15), rgba(163, 113, 247, 0.25)); color: var(--accent-purple); border: 1px solid rgba(163, 113, 247, 0.3); grid-column: span 2; }
@@ -108,20 +89,23 @@
   .callout { background: rgba(88, 166, 255, 0.08); border-left: 3px solid var(--accent); padding: 16px 20px; margin: 24px 0; border-radius: 6px; font-size: 14px; }
   .callout.amber { background: rgba(210, 153, 34, 0.08); border-left-color: var(--accent-amber); }
   .callout.green { background: rgba(63, 185, 80, 0.08); border-left-color: var(--accent-green); }
+  .callout.red { background: rgba(248, 81, 73, 0.08); border-left-color: var(--accent-red); }
   .callout strong { color: var(--fg); }
   .version-note { background: rgba(210, 153, 34, 0.08); border-left: 3px solid var(--accent-amber); padding: 16px 20px; margin: 16px 0 32px; border-radius: 6px; font-size: 13px; color: var(--fg-muted); }
-  @media print {
-    body { background: white; color: black; }
-    .card, .chart-card, .arch-diagram { border-color: #ccc; background: white; }
-    nav.toc { display: none; }
-  }
+  .tco-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-top: 16px; }
+  .tco-block h4 { margin: 0 0 12px; font-size: 16px; color: var(--fg); }
+  .tco-block table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tco-block th, .tco-block td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  .tco-block th { color: var(--fg-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tco-block tr:last-child td { border-bottom: none; font-weight: 700; color: var(--fg); }
+  @media print { body { background: white; color: black; } nav.toc { display: none; } }
 </style>
 </head>
 <body>
 <div class="container">
 
 <header class="hero">
-  <div class="eyebrow">Strategický návrh · v3 · 2026-05-14</div>
+  <div class="eyebrow">Strategický návrh · v4 — full TCO · 2026-05-14</div>
   <h1>Sovereign AI pro Finshape</h1>
   <p class="lead">
     Hybridní architektura, kde sovereign open-weight modely (Qwen3-Coder, DeepSeek V4, GLM-4.7)
@@ -132,23 +116,27 @@
     <span><strong>~500</strong> vývojářů</span>
     <span><strong>~400</strong> aktivních AI uživatelů</span>
     <span>Banking software · <strong>DORA/GDPR</strong> compliance</span>
-    <span>Současný spend <strong>~$350-450k/rok</strong> ($30-37k/měs)</span>
-    <span>Průměr <strong>~$70-95/seat/měs</strong></span>
+    <span>Současný baseline full TCO <strong>~$360-470k/rok</strong></span>
+    <span>Senior CZ FTE <strong>~$95-130k/rok</strong> (fully loaded)</span>
   </div>
 </header>
 
 <div class="version-note">
-  <strong>v3 (2026-05-14):</strong> Tato verze opravuje baseline z v1/v2 — skutečný současný spend je ~$350-450k/rok
-  (~$30-37k/měs), trajektorie roste k ~$500-700k/rok. Při tomto baseline je <strong>Scénář A okamžitě levnější
-  (~$130-200k/rok úspora)</strong>, Scénář B je rovnocenný a dává price ceiling při růstu, on-prem stále čeká na další růst.
+  <strong>v4 update (2026-05-14):</strong> Tato verze doplňuje plnou TCO včetně lidské práce (FTE, harness adaptace,
+  productivity tax). v3 počítala jen infrastructure cost a tvrdila "úspora $130-200k/rok hned dnes" — to platilo
+  jen pro infra. Po započtení 1-2 FTE platform/MLOps (CZ rates ~$95-130k/rok fully loaded), harness adaptace
+  ($45-115k jednorázové) a transition productivity tax: <strong>Scénář A je rok 1 ≈ rovnocenný s baseline, rok 2+
+  úspora ~$25-195k/rok (mid ~$110k), ROI break-even 12-24 měs.</strong> Strategická hodnota (sovereignty, DORA,
+  vendor independence) zůstává hlavní argument; čistý cost-saving je sekundární benefit.
 </div>
 
 <nav class="toc">
   <a href="#tldr">TL;DR</a>
   <a href="#architecture">Architektura</a>
   <a href="#models">Modely</a>
-  <a href="#scenarios">Scénáře hostingu</a>
-  <a href="#costs">Rozpočet</a>
+  <a href="#scenarios">Scénáře</a>
+  <a href="#human-cost">Lidská práce</a>
+  <a href="#costs">Full TCO</a>
   <a href="#triggers">Triggers</a>
   <a href="#roadmap">Roadmap</a>
   <a href="#risks">Rizika</a>
@@ -157,386 +145,425 @@
 
 <section id="tldr">
   <h2>TL;DR — co a proč</h2>
-  <p class="sub">Klíčová zjištění a doporučení.</p>
+  <p class="sub">Klíčová zjištění a doporučení (full TCO, v4).</p>
   <div class="grid-4">
     <div class="card">
       <span class="badge blue">Motivace</span>
       <div class="num blue">4×</div>
-      <div class="desc">Současně tlačí DORA/GDPR, rostoucí spend, vendor lock-in a potřeba customizace na banking IP.</div>
+      <div class="desc">DORA/GDPR + kontrola nákladů + vendor independence + banking IP customizace.</div>
     </div>
     <div class="card">
       <span class="badge green">Doporučení</span>
       <div class="num green">A → B</div>
-      <div class="desc">Pilot Scénář A (Nebius serverless) Q4 2026, rollout 400 dev Q1-Q2 2027, přechod na B podle triggeru.</div>
+      <div class="desc">Fáze 0 strategic decision Q3, pilot Q4 2026, rollout 400 dev Q1-Q2 2027, B podle triggeru.</div>
     </div>
     <div class="card">
-      <span class="badge green">Roční úspora</span>
-      <div class="num green small">$130-200k</div>
-      <div class="desc">Scénář A vs současný baseline $350-450k/rok. Při růstu spendu se výhoda zvětšuje.</div>
+      <span class="badge amber">Úspora rok 2+</span>
+      <div class="num amber small">$25-195k/rok</div>
+      <div class="desc">Mid-point ~$110k/rok. Rok 1 ≈ break-even (transition). ROI 12-24 měsíců.</div>
     </div>
     <div class="card">
-      <span class="badge amber">Klíčové KPI</span>
-      <div class="num amber">≥70%</div>
-      <div class="desc">Cílový share trafiku obsloužený sovereign modelem bez eskalace na Opus + prefix-cache hit ≥80%.</div>
+      <span class="badge purple">Klíčové KPI</span>
+      <div class="num" style="color: var(--accent-purple);">≥6/8</div>
+      <div class="desc">Pilot kritérií (kvalita, latence, NPS, full TCO, SWE-Bench, DORA, cache, harness stabilita).</div>
     </div>
   </div>
-  <div class="callout">
-    <strong>Hybrid není ústupek.</strong> Sovereign primary + Anthropic/OpenAI fallback dává nejlepší kvalitu
-    pro nejtěžších 20&nbsp;% úloh, suverenitu pro zbytek, a graceful degradation pokud sovereign selže.
-    Žádný "big bang", žádné riskování produktivity 500 vývojářů.
+  <div class="callout amber">
+    <strong>Toto NENÍ cost-saving move.</strong> Je to strategický posun s mírnou cost benefit v dlouhodobém horizontu.
+    Pokud chcete čistou úsporu rychle, sovereign není nástroj. Pokud chcete sovereignty + nezávislost + odolnost
+    vůči AI vendor turbulencím + DORA compliance, sovereign dává smysl i s upravenou TCO.
   </div>
 </section>
 
 <section id="architecture">
   <h2>Cílová architektura</h2>
-  <p class="sub">Vlastní AI Gateway routuje request podle typu úlohy.</p>
-  <div class="arch-diagram">
-    <div class="arch-block">
-      <strong>~400 vývojářů</strong>
-      <span style="color: var(--fg-muted); font-size: 12px;">Claude Code · Codex CLI · Cline · Cursor · Continue · vlastní harness</span>
-    </div>
-    <div class="arrow">↓ OpenAI-compatible API</div>
-    <div class="arch-block gateway">
-      <strong>AI Gateway (LiteLLM, EU hosting)</strong>
-      <span style="color: var(--fg-muted); font-size: 12px;">
-        Auth · per-user budgety · prefix-cache aware routing · audit log (DORA, retention 6 let) · cost dashboard
-      </span>
-    </div>
-    <div class="arrow">↓ ↓</div>
-    <div class="arch-row">
-      <div class="arch-block sovereign">
-        <strong style="color: var(--accent-green);">Sovereign primary · 70-80 % trafiku</strong>
-        <ul>
-          <li><strong>Qwen3-Coder-480B-A35B</strong> · Apache 2.0 · agentic default</li>
-          <li><strong>GLM-4.7</strong> (355B/32B) · MIT · chat &amp; lehčí úlohy</li>
-          <li><strong>DeepSeek V4-Pro</strong> · MIT · A/B vs Qwen</li>
-          <li><strong>Codestral 25.08</strong> · FR · inline autocompletion</li>
-          <li><strong>Qwen3-Coder-Next</strong> (3B) · cheap/fast tier</li>
-        </ul>
-      </div>
-      <div class="arch-block frontier">
-        <strong style="color: var(--accent-amber);">Frontier proprietary · 20-30 % hard tasks</strong>
-        <ul>
-          <li><strong>Claude Opus 4.7</strong> · multi-repo refactor, novel algorithms</li>
-          <li><strong>GPT-5 / GPT-5-Codex</strong> · hluboké debugging</li>
-          <li>Přes existující enterprise smlouvy</li>
-          <li>Graceful escalation, transparentní pro dev</li>
-        </ul>
-      </div>
-    </div>
+  <p class="sub">Open-source harness místo Claude Code (zásadní transition cost — viz Lidská práce). Vlastní AI Gateway routuje request podle typu úlohy.</p>
+  <div class="chart-card" style="background: var(--bg-card-2); font-family: 'SF Mono', Menlo, Monaco, monospace; font-size: 13px; line-height: 1.5;">
+<pre style="margin: 0; white-space: pre-wrap; color: var(--fg);">┌────────────────────────────────────────────────────────────────┐
+│ ~400 vývojářů (Cline / Roo / Aider / opencode / Crush)         │
+│ (transition z Claude Code — viz sekce Lidská práce)            │
+└──────────────────────────┬─────────────────────────────────────┘
+                           │ OpenAI-compatible API
+                ┌──────────▼──────────┐
+                │   AI Gateway        │  ← LiteLLM
+                │   (Praha/EU, vlastní)│  ← auth, audit log, routing
+                └──┬──────┬───────────┘  ← prefix-cache aware routing
+                   │      │
+        ┌──────────┘      └─────────────┐
+        ▼                               ▼
+┌───────────────────┐         ┌──────────────────────┐
+│ Sovereign primary │         │ Frontier fallback    │
+│ (70-80 % trafiku) │         │ (20-30 % hard tasks) │
+└───────────────────┘         └──────────────────────┘</pre>
   </div>
 </section>
 
 <section id="models">
   <h2>Modely — kvalita vs sovereignty</h2>
-  <p class="sub">SWE-Bench Verified score (vyšší = lepší schopnost vyřešit reálné GitHub issue). Open-weight licence = lze hostit v EU.</p>
+  <p class="sub">SWE-Bench Verified score (vyšší = lepší schopnost vyřešit reálné GitHub issue). Open-weight = lze hostit v EU.</p>
   <div class="chart-card">
     <div class="chart-wrap tall">
       <canvas id="modelsChart"></canvas>
     </div>
   </div>
   <div class="callout green">
-    <strong>Klíčový insight:</strong> Open-weight špička (DeepSeek V4-Pro 80.6, Qwen3.6-Plus 78.8)
-    je dnes <strong>blíž k Claude Opus 4.7 (87.6) než k loňskému Sonnet 4 (~70).</strong>
-    Gap se uzavřel — open-weight nyní dostačuje pro většinu denní práce.
-  </div>
-  <div class="callout amber">
-    <strong>EU AI Act enforcement 2. 8. 2026:</strong> Modely čínského původu (Qwen, DeepSeek, GLM, Kimi)
-    potřebují provenance review — security audit, hash verifikaci vah, air-gapped runtime. Řešitelné, ale počítat
-    se 4-6 týdny právního review.
+    <strong>Insight:</strong> Open-weight špička (DeepSeek V4-Pro 80.6, Qwen3.6-Plus 78.8)
+    je dnes blíž k Claude Opus 4.7 (87.6) než k loňskému Sonnet 4 (~70). Gap se uzavřel.
   </div>
 </section>
 
 <section id="scenarios">
-  <h2>Scénáře hostingu</h2>
-  <p class="sub">Čtyři jurisdikčně EU varianty (Praha, FI, NL, FR, PL).</p>
+  <h2>Scénáře hostingu (infrastructure-only)</h2>
+  <p class="sub">Čtyři EU varianty. <strong>Lidská práce a transition cost jsou v sekci níže — pro full TCO sloučit obě.</strong></p>
   <div class="grid-4">
     <div class="card" style="border-color: var(--accent);">
-      <span class="badge blue">A — Pilot + produkce</span>
-      <h3>Nebius Token Factory + Mistral</h3>
+      <span class="badge blue">A — Pilot + rollout</span>
+      <h3>Nebius + Mistral</h3>
       <div class="num blue">$170-260k</div>
-      <div class="desc"><strong>Ročně</strong> · CapEx $0 · Time-to-launch 2-4 týdny</div>
+      <div class="desc"><strong>Infra ročně</strong> · CapEx $0 · TTL 2-4 týdny</div>
       <p style="font-size: 13px; color: var(--fg-muted); margin-top: 12px;">
-        Pay-per-token, OpenAI-compatible, EU region. <strong>Levnější než dnes o $90-230k/rok.</strong>
+        Pay-per-token, EU region. Po doplnění FTE: $255-425k/rok ongoing.
       </p>
     </div>
     <div class="card" style="border-color: var(--accent-green);">
-      <span class="badge green">B — Po triggeru T-B</span>
+      <span class="badge green">B — Po T-B</span>
       <h3>Dedikovaný GPU rental</h3>
       <div class="num green">$410-440k</div>
-      <div class="desc"><strong>Ročně</strong> · CapEx $0 · Time-to-launch 6-10 týdnů</div>
+      <div class="desc"><strong>Infra ročně</strong> · CapEx $0 · TTL 6-10 týdnů</div>
       <p style="font-size: 13px; color: var(--fg-muted); margin-top: 12px;">
-        4× 8×H200 reserved (Nebius FI / OVHcloud FR). Rovnocenné s baseline, ale strop ceny při růstu.
+        4× 8×H200 reserved. Po doplnění FTE: $670-740k/rok.
       </p>
     </div>
     <div class="card">
       <span class="badge purple">C — 2028+ only-if</span>
       <h3>On-prem (Praha)</h3>
       <div class="num" style="color: var(--accent-purple);">$580-625k</div>
-      <div class="desc"><strong>Ročně amort.</strong> · CapEx $2M · TTL 4-7 měsíců</div>
+      <div class="desc"><strong>Infra amort.</strong> · CapEx $2M · TTL 4-7 měs.</div>
       <p style="font-size: 13px; color: var(--fg-muted); margin-top: 12px;">
-        Vlastní 4× 8×H200 v Praze. Vyplatí se až při spendu &gt; $600k/rok stabilně.
+        Po doplnění FTE: $935-1100k/rok. Vyplatí se až &gt; $1M/rok baseline.
       </p>
     </div>
     <div class="card" style="border-color: var(--accent-red); opacity: 0.85;">
       <span class="badge red">D — Nedoporučeno</span>
-      <h3>Hyperscaler EU region</h3>
+      <h3>Hyperscaler EU</h3>
       <div class="num red">$300k-2.4M</div>
       <div class="desc"><strong>Ročně</strong> · CLOUD Act expozice</div>
       <p style="font-size: 13px; color: var(--fg-muted); margin-top: 12px;">
-        AWS/Azure/GCP EU. Pohodlí, ale CLOUD Act se aplikuje i na ESC — pro DORA/CNB problém.
+        AWS/Azure/GCP EU. CLOUD Act se aplikuje i na ESC — problém pro DORA/CNB.
       </p>
     </div>
   </div>
 </section>
 
-<section id="costs">
-  <h2>Rozpočtové srovnání</h2>
-  <p class="sub">Vůči současnému spendu $350-450k/rok (~$30-37k/měs) a pesimistické trajektorii $500-700k/rok.</p>
-  <div class="grid-2">
-    <div class="chart-card">
-      <h3>Měsíční náklad</h3>
-      <div class="chart-sub">USD/měs, mid-point odhad</div>
-      <div class="chart-wrap">
-        <canvas id="monthlyChart"></canvas>
-      </div>
+<section id="human-cost">
+  <h2>Lidská práce &amp; transition cost (CZ-realistic) — NOVÉ v4</h2>
+  <p class="sub">Co stojí přechod z Claude Code na sovereign stack v Praze. Senior CZ engineer fully loaded TC je ~60-75 % US/west-EU ekvivalentu.</p>
+
+  <div class="grid-3">
+    <div class="card">
+      <span class="badge blue">CZ mzdy (fully loaded)</span>
+      <h3>Senior engineer náklad zaměstnavatele</h3>
+      <table style="width: 100%; font-size: 13px; margin-top: 8px;">
+        <tr><td>Platform / DevOps</td><td style="text-align: right; color: var(--fg);">~$95-115k</td></tr>
+        <tr><td>MLOps (CZ premium)</td><td style="text-align: right; color: var(--accent-amber);">~$115-130k</td></tr>
+        <tr><td>DevEx</td><td style="text-align: right; color: var(--fg);">~$80-100k</td></tr>
+        <tr><td>Backend dev</td><td style="text-align: right; color: var(--fg);">~$90-110k</td></tr>
+        <tr><td>Externí MLOps</td><td style="text-align: right; color: var(--fg);">~$85-130/h</td></tr>
+      </table>
     </div>
-    <div class="chart-card">
-      <h3>3-letá TCO</h3>
-      <div class="chart-sub">Kumulativní 3-letá TCO v mil. USD</div>
-      <div class="chart-wrap">
-        <canvas id="tcoChart"></canvas>
-      </div>
+    <div class="card">
+      <span class="badge amber">Harness adaptace</span>
+      <h3>Claude Code → open-source</h3>
+      <div class="num amber small">$45-115k</div>
+      <div class="desc">Jednorázové (640-1500 h engineering): harness fork, system prompts per model, tool-use plumbing, MCP integrace, slash commands, eval suite.</div>
+    </div>
+    <div class="card">
+      <span class="badge red">Productivity tax</span>
+      <h3>Transition learning curve</h3>
+      <div class="num red small">$40-100k</div>
+      <div class="desc">Jednorázové: 400 dev × 5-10 % × 10-14 týdnů × $52/h fully loaded. Pilot redukuje risk.</div>
     </div>
   </div>
+
+  <div class="chart-card" style="margin-top: 24px;">
+    <h3>FTE allocation per scénář (ongoing rok 2+)</h3>
+    <div class="chart-sub">Total FTE potřeba; část absorbováno existujícím týmem, část nový headcount.</div>
+    <div class="chart-wrap">
+      <canvas id="fteChart"></canvas>
+    </div>
+  </div>
+
+  <div class="callout amber" style="margin-top: 24px;">
+    <strong>CZ talent pool risk:</strong> Senior MLOps s vLLM/SGLang/CUDA expertise je v ČR vzácný.
+    Hiring timeline 6-9 měsíců + ramp-up 3-6 měsíců = 9-15 měs. od decision do plné produktivity.
+    <strong>Začít hiring v Q3 2026</strong> (Fáze 0), krátkodobě externí konzultanti ($85-130/h CZ market).
+  </div>
+</section>
+
+<section id="costs">
+  <h2>Full TCO srovnání (infra + lidská práce)</h2>
+  <p class="sub">Rok 1 (s transition) vs rok 2+ (ongoing). Baseline full TCO ~$360-470k/rok (subscription + ~$10-20k implicit FTE).</p>
+
+  <div class="grid-2">
+    <div class="tco-block">
+      <h4>Scénář A — rok 1 (transition) ~$360-675k</h4>
+      <table>
+        <tr><th>Položka</th><th style="text-align:right;">Náklad</th></tr>
+        <tr><td>Infrastructure (Nebius + Mistral + escalation)</td><td style="text-align:right;">$170-260k</td></tr>
+        <tr><td>Platform FTE 0.5-1.0</td><td style="text-align:right;">$50-115k</td></tr>
+        <tr><td>DevEx FTE 0.5 (jen rok 1)</td><td style="text-align:right;">$40-50k</td></tr>
+        <tr><td>Harness adaptace (jednorázové)</td><td style="text-align:right;">$45-115k</td></tr>
+        <tr><td>Change mgmt &amp; training (jednorázové)</td><td style="text-align:right;">$15-35k</td></tr>
+        <tr><td>Productivity tax (jednorázové)</td><td style="text-align:right;">$40-100k</td></tr>
+        <tr><td>Celkem rok 1</td><td style="text-align:right;">$360-675k</td></tr>
+      </table>
+    </div>
+    <div class="tco-block">
+      <h4>Scénář A — rok 2+ (ongoing) ~$255-425k/rok</h4>
+      <table>
+        <tr><th>Položka</th><th style="text-align:right;">Náklad</th></tr>
+        <tr><td>Infrastructure</td><td style="text-align:right;">$170-260k</td></tr>
+        <tr><td>Platform FTE 0.5-1.0</td><td style="text-align:right;">$50-115k</td></tr>
+        <tr><td>DevEx FTE 0.25</td><td style="text-align:right;">$20-25k</td></tr>
+        <tr><td>Harness maintenance (0.2 FTE)</td><td style="text-align:right;">$15-25k</td></tr>
+        <tr><td>Celkem rok 2+</td><td style="text-align:right;">$255-425k/rok</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="chart-card" style="margin-top: 24px;">
+    <h3>Full TCO srovnání: rok 1 vs rok 2+</h3>
+    <div class="chart-sub">Tisíce USD/rok. Baseline status quo zahrnuje ~$10-20k implicit FTE.</div>
+    <div class="chart-wrap tall">
+      <canvas id="tcoChart"></canvas>
+    </div>
+  </div>
+
   <table class="compare" style="margin-top: 24px;">
     <thead>
       <tr>
         <th>Scénář</th>
-        <th>Ročně</th>
+        <th>Rok 1 (s transition)</th>
+        <th>Rok 2+ ongoing</th>
         <th>3-letá TCO</th>
-        <th>vs dnešní $400k/rok</th>
-        <th>vs trajektorie $600k/rok</th>
-        <th>CapEx</th>
-        <th>TTL</th>
+        <th>vs baseline ($410k/rok)</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>Status quo (Claude + Codex)</td>
-        <td>$350-450k</td>
-        <td>$1.1-1.4M</td>
-        <td>—</td>
-        <td>—</td>
-        <td>—</td>
+        <td>Status quo (Claude + Codex + implicit FTE)</td>
+        <td>$360-470k</td>
+        <td>$360-470k/rok</td>
+        <td>$1080-1410k</td>
         <td>—</td>
       </tr>
       <tr>
-        <td>Pesimistická trajektorie</td>
-        <td>$500-700k</td>
-        <td>$1.5-2.1M</td>
-        <td>+25 až +75 %</td>
-        <td>—</td>
-        <td>—</td>
-        <td>—</td>
+        <td>Pesimistická trajektorie (růst)</td>
+        <td>$510-720k</td>
+        <td>$510-720k/rok</td>
+        <td>$1530-2160k</td>
+        <td>+25-75 %</td>
       </tr>
       <tr>
         <td><strong>A. EU Serverless</strong> <span class="badge blue">pilot + rollout</span></td>
-        <td>$170-260k</td>
-        <td>$0.5-0.8M</td>
-        <td class="winner">−35 až −58 %</td>
-        <td class="winner">−55 až −72 %</td>
-        <td>$0</td>
-        <td>2-4 týdny</td>
+        <td>$360-675k</td>
+        <td class="winner">$255-425k/rok</td>
+        <td>$870-1525k</td>
+        <td class="winner">Rok 2+ −$25-195k/rok</td>
       </tr>
       <tr>
         <td><strong>B. Dedikovaný GPU rental</strong> <span class="badge green">po T-B</span></td>
-        <td>$410-440k</td>
-        <td>$1.2-1.3M</td>
-        <td class="even">±0 až +10 %</td>
-        <td class="winner">−27 až −34 %</td>
-        <td>$0</td>
-        <td>6-10 týdnů</td>
+        <td>$700-800k</td>
+        <td class="loss">$670-740k/rok</td>
+        <td>$2.0-2.3M</td>
+        <td class="loss">+$220-390k/rok</td>
       </tr>
       <tr>
         <td>C. On-prem 4× 8×H200</td>
-        <td>$580-625k</td>
-        <td>$3.0-3.5M + $2M CapEx</td>
-        <td class="loss">+45 až +55 %</td>
-        <td>±0 až +4 %</td>
-        <td>$2.0M</td>
-        <td>4-7 měsíců</td>
-      </tr>
-      <tr>
-        <td>D. Hyperscaler EU</td>
-        <td>$300k-2.4M</td>
-        <td>$1-7M</td>
-        <td>mix</td>
-        <td>mix</td>
-        <td>$0</td>
-        <td>týdny</td>
+        <td>$2M CapEx + $935-1100k</td>
+        <td>$935-1100k/rok</td>
+        <td>$4.9M + $2M CapEx</td>
+        <td class="loss">+$525-690k/rok</td>
       </tr>
     </tbody>
   </table>
-  <div class="callout green">
-    <strong>Klíčový závěr (v3):</strong> Scénář A je <strong>už dnes ekonomicky výhodnější</strong> než current state
-    o ~$130-200k/rok. Scénář B je rovnocenný a dává cap, jakmile spend poroste. On-prem (C) má smysl až při spendu
-    stabilně přes $600k/rok.
+
+  <div class="callout green" style="margin-top: 16px;">
+    <strong>Klíčový závěr (v4):</strong> Scénář A je <strong>rok 1 ≈ rovnocenný s baseline</strong>
+    (transition cost dorovná infrastructure savings), <strong>rok 2+ úspora ~$25-195k/rok</strong> (mid ~$110k).
+    Break-even ROI 12-24 měsíců. Scénář B se vyplatí jen při růstu spendu nebo strategickém benefitu (fine-tuning).
   </div>
 </section>
 
 <section id="triggers">
-  <h2>Decision triggers — kdy aktivovat kterou fázi</h2>
-  <p class="sub">Měřitelné prahy, které řídí timing scale-upu.</p>
-  <table class="triggers-table">
+  <h2>Decision triggers (v4)</h2>
+  <p class="sub">Měřitelné prahy s aktualizovaným statusem po v4 ekonomice.</p>
+  <table class="compare">
     <thead>
       <tr><th>Trigger</th><th>Status k 2026-05-14</th><th>Akce</th></tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong style="color: var(--accent-green);">T-A:</strong> Spustit Scénář A (pilot)</td>
-        <td><span class="badge green">✅ Splněno</span> ($400k/rok > $250k práh)</td>
-        <td>Spustit pilot 15-30 dev v Q4 2026</td>
+        <td><strong style="color: var(--accent-amber);">T-A:</strong> Spustit Scénář A</td>
+        <td><span class="badge amber">⚖️ Strategic decision</span> — cost-only slabý, sovereignty hodnota rozhoduje</td>
+        <td>Fáze 0 v Q3, pilot Q4 2026 pokud go</td>
       </tr>
       <tr>
         <td><strong style="color: var(--accent-green);">T-B:</strong> Přejít na Scénář B</td>
-        <td><span class="badge amber">⏳ Pravděpodobně 12-18 měs.</span></td>
-        <td>RFP a kontrakt-ready hned, aktivace po validaci A</td>
+        <td><span class="badge amber">⏳ 18-30 měs.</span> (později než v3 — full TCO B výrazně dražší)</td>
+        <td>RFP a kontrakt-ready hned, aktivace při růstu baseline</td>
       </tr>
       <tr>
-        <td><strong style="color: var(--accent-purple);">T-C:</strong> Aktivovat Scénář C (on-prem)</td>
-        <td><span class="badge red">⏳ Nepravděpodobné v 24 měs.</span></td>
-        <td>Vyhodnotit 2028 podle reálných dat z B</td>
+        <td><strong style="color: var(--accent-purple);">T-C:</strong> Aktivovat on-prem</td>
+        <td><span class="badge red">⏳ Nepravděpodobné v 36 měs.</span></td>
+        <td>Vyhodnotit 2028+ jen při $1M+/rok stabilně</td>
       </tr>
       <tr>
         <td><strong style="color: var(--accent-amber);">T-reg:</strong> Regulační vynucení</td>
-        <td><span class="badge amber">❓ Vyžaduje DORA gap assessment</span></td>
-        <td>Pokud T-reg padne, T-A/T-B se zrychlí na týdny</td>
+        <td><span class="badge amber">❓ DORA gap assessment ve Fázi 0</span></td>
+        <td>Pokud padne, cost-only logika neaplikuje</td>
       </tr>
     </tbody>
   </table>
 </section>
 
 <section id="roadmap">
-  <h2>Fázovaná roadmap</h2>
-  <p class="sub">Pilot Scénáře A → produkční rollout → Scénář B podle T-B → on-prem podle T-C.</p>
+  <h2>Fázovaná roadmap (v4)</h2>
+  <p class="sub">Fáze 0 strategic gate → Fáze 1 pilot → Fáze 2 rollout → Fáze 3 B → Fáze 4 eval C.</p>
   <div class="chart-card">
     <div class="roadmap">
       <div class="head"></div>
+      <div class="head">Q3 2026</div>
       <div class="head">Q4 2026</div>
       <div class="head">Q1-Q2 2027</div>
-      <div class="head">Q3-Q4 2027</div>
+      <div class="head">Q4 2027 - 2028</div>
       <div class="head">2028+</div>
 
+      <div class="label">Fáze 0<br><span style="color: var(--accent-amber); font-weight:600;">Strategic gate</span></div>
+      <div class="bar phase0">DORA assessment · CFO/CTO/CISO alignment · hiring start · legal review · ~$15-25k</div>
+      <div style="grid-column: span 4;"></div>
+
       <div class="label">Fáze 1<br><span style="color: var(--accent); font-weight:600;">Pilot A</span></div>
-      <div class="bar a">15-30 dev · Nebius + Mistral · LiteLLM gateway · validace kvality / NPS / DORA</div>
+      <div></div>
+      <div class="bar a" style="grid-column: span 1;">15-30 dev · harness adaptace · 8 KPIs · ~$80-130k</div>
       <div style="grid-column: span 3;"></div>
 
       <div class="label">Fáze 2<br><span style="color: var(--accent-green); font-weight:600;">Rollout A</span></div>
       <div></div>
-      <div class="bar a" style="grid-column: span 1;">400 dev · úspora ~$130-200k/rok · hybrid routing</div>
+      <div></div>
+      <div class="bar a" style="grid-column: span 1;">400 dev · rok 1 $360-675k · rok 2+ $255-425k/rok</div>
       <div style="grid-column: span 2;"></div>
 
       <div class="label">Fáze 3<br><span style="color: var(--accent-green); font-weight:600;">Scénář B</span></div>
       <div></div>
       <div></div>
-      <div class="bar b" style="grid-column: span 2;">Aktivace po T-B · 4× 8×H200 reserved · price ceiling + sovereignty</div>
+      <div></div>
+      <div class="bar b" style="grid-column: span 2;">Po T-B · +MLOps FTE · price ceiling + sovereignty</div>
 
       <div class="label">Fáze 4<br><span style="color: var(--accent-purple); font-weight:600;">Eval C</span></div>
       <div></div>
       <div></div>
       <div></div>
-      <div class="bar c" style="grid-column: span 1;">Vyhodnocení on-prem · jen pokud spend &gt; $600k/rok</div>
+      <div></div>
+      <div class="bar c" style="grid-column: span 1;">Jen pokud $1M+/rok stabilně</div>
     </div>
   </div>
 </section>
 
 <section id="risks">
   <h2>Rizika a mitigace</h2>
-  <p class="sub">Strategická flexibilita: váhy modelů jsou portovatelné, gateway je vlastní, hybrid zaručuje graceful degradation.</p>
+  <p class="sub">Strategická flexibilita: váhy modelů portovatelné, gateway vlastní, hybrid = graceful degradation.</p>
   <ul class="risk-list">
     <li>
-      <span class="risk">Anthropic/OpenAI zdraží escalation tier 2-3×</span>
-      <span>Snížit eskalaci v sovereign fázi, posílit GLM-4.7 / Kimi K2.6 jako "near-frontier".</span>
+      <span class="risk">Harness adaptace selže (nové v4)</span>
+      <span>Pilot ověří. Backup: zůstat na Claude Code pro 30 % traffic, sovereign jen pro 70 % via gateway.</span>
+    </li>
+    <li>
+      <span class="risk">CZ MLOps hiring delay (nové v4)</span>
+      <span>Externí konzultanti $85-130/h jako bridge. Začít hiring v Q3 2026 (Fáze 0), timeline 6-9 měs.</span>
+    </li>
+    <li>
+      <span class="risk">Productivity tax horší než odhad (nové v4)</span>
+      <span>Champions program, pomalejší rollout po týmech, preserved Claude Code fallback.</span>
+    </li>
+    <li>
+      <span class="risk">Anthropic/OpenAI zdraží 2-3×</span>
+      <span>Snížit eskalaci, posílit GLM-4.7 / Kimi K2.6 jako near-frontier.</span>
     </li>
     <li>
       <span class="risk">Nebius / EU API zdraží</span>
-      <span>Migrace na dedikovaný GPU rental (Scénář B) — Nebius i OVHcloud nabízejí stejnou cestu. <strong>Váhy modelů jsou portovatelné.</strong></span>
+      <span>Migrace na Scénář B — váhy modelů portovatelné mezi providery za týdny.</span>
     </li>
     <li>
       <span class="risk">EU AI Act zakáže čínské modely</span>
-      <span>Přepnout primární na Llama 4-Coder (až vyjde) + Codestral. Degradace SWE-Bench ~5-10 bodů.</span>
+      <span>Přepnout primární na Llama 4-Coder + Codestral. Degradace SWE-Bench 5-10 bodů.</span>
     </li>
     <li>
-      <span class="risk">OVHcloud / Nebius výpadek</span>
+      <span class="risk">Provider výpadek</span>
       <span>Multi-region: primary Nebius FI, secondary OVHcloud FR. Gateway routuje automaticky.</span>
     </li>
     <li>
       <span class="risk">Vývojáři nepřijmou kvalitu</span>
-      <span>Pilot odhalí dřív, než se utopí kapitál. Claude Code Max zůstává jako fallback (degradace, ne nahrazení).</span>
-    </li>
-    <li>
-      <span class="risk">MLOps team nestíhá</span>
-      <span>Pilot = serverless, žádný GPU cluster. Scénář B+ externí kontrakt (Nebius / OVHcloud managed inference).</span>
-    </li>
-    <li>
-      <span class="risk">GPU trh zkolabuje, Blackwell zlevní</span>
-      <span>Žádný CapEx ve Fázích 1-2 — flexibilita zachována pro 2028 refresh.</span>
+      <span>Pilot odhalí dřív. Claude Code Max zůstává v gatewayi jako fallback (degradace, ne nahrazení).</span>
     </li>
   </ul>
 </section>
 
 <section id="actions">
   <h2>Další kroky</h2>
-  <p class="sub">Co je potřeba odstartovat v prvních 12 týdnech pilotu (Fáze 1).</p>
+  <p class="sub">Sekvenční gates: strategická decision → pilot → rollout → scale-up.</p>
   <ol class="actions">
     <li>
-      <strong>AI Gateway (LiteLLM + audit + per-user budgety + prefix-cache aware routing)</strong>
-      <span class="when">Platform team · týdny 1-3</span>
+      <strong>Fáze 0: DORA gap assessment + strategic alignment (CFO/CTO/CISO)</strong>
+      <span class="when">Q3 2026 · 6-8 týdnů · ~$15-25k</span>
     </li>
     <li>
-      <strong>Nebius Token Factory + Mistral La Plateforme kontrakt + DPA + endpoint setup</strong>
-      <span class="when">Procurement + Legal + Platform · týdny 1-4</span>
+      <strong>Start hiring senior platform/MLOps engineer (CZ timeline 6-9 měs.)</strong>
+      <span class="when">Q3 2026 onwards · externí konzultanti jako bridge</span>
     </li>
     <li>
-      <strong>Spend tracking dashboard + T-B trigger watch</strong>
-      <span class="when">Platform team · týdny 2-3</span>
+      <strong>AI Gateway (LiteLLM + audit + budgety + prefix-cache routing)</strong>
+      <span class="when">Fáze 1 týdny 1-3 · Platform team · ~$10-15k</span>
     </li>
     <li>
-      <strong>Legal review čínských modelů vs EU AI Act 2. 8. 2026</strong>
-      <span class="when">Legal + Security · týdny 1-6</span>
+      <strong>Nebius + Mistral kontrakt + DPA + endpoint setup</strong>
+      <span class="when">Fáze 1 týdny 1-4 · Procurement + Legal · ~$5-8k</span>
     </li>
     <li>
-      <strong>Pilot rollout pro 15-30 vývojářů (Claude Code config → gateway endpoint)</strong>
-      <span class="when">DevEx · týdny 4-6</span>
+      <strong>Harness adaptace — Cline / Roo / Aider / opencode / Crush volba + customizace + MCP + eval</strong>
+      <span class="when">Fáze 1 týdny 2-12 · ~$25-50k (mix interní + externí)</span>
     </li>
     <li>
-      <strong>DORA gap assessment pro current state i target state</strong>
-      <span class="when">Compliance · týdny 4-10</span>
+      <strong>Pilot rollout pro 15-30 vývojářů · měření 8 KPIs</strong>
+      <span class="when">Fáze 1 týdny 4-12 · DevEx 0.5 FTE</span>
     </li>
     <li>
-      <strong>Internal SWE-Bench evaluation set (50 reálných úloh)</strong>
-      <span class="when">Platform + engineering · týdny 4-8</span>
+      <strong>Internal SWE-Bench eval set (50 reálných úloh) + blind review sovereign vs Opus</strong>
+      <span class="when">Fáze 1 týdny 4-8 · ~$3-5k interní</span>
+    </li>
+    <li>
+      <strong>Legal review čínských modelů (EU AI Act 2. 8. 2026)</strong>
+      <span class="when">Fáze 1 týdny 1-6 · ~$5-10k legal/external</span>
     </li>
     <li>
       <strong>RFP pro Scénář B (Nebius reserved + OVHcloud HGX)</strong>
-      <span class="when">Procurement · týdny 8-12</span>
+      <span class="when">Fáze 1 týdny 8-12 · ~$3-5k legal</span>
     </li>
   </ol>
 </section>
 
 <footer>
   <p>
-    Strategický návrh připraven pro diskuzi s vedením, procurementem a compliance.
+    Strategický návrh připraven pro diskuzi s vedením, procurementem, compliance a CFO.
     Detailní zdroje a citace v souborové verzi
     <a href="./sovereign-ai-strategy.md">sovereign-ai-strategy.md</a>.
-    Verze v3 · 2026-05-14.
+    Verze v4 · 2026-05-14.
   </p>
   <p>
     Plné MD: SWE-Bench Verified leaderboard · Qwen3-Coder / DeepSeek-V4 / GLM-4.7 / Kimi K2.6 HuggingFace ·
     Nebius Token Factory pricing · OVHcloud HGX bare-metal · vLLM &amp; SGLang docs ·
-    EAGLE-3 speculative decoding production data · TTC Teleport Prague · IAPP DORA+GDPR guide ·
-    EU AI Act enforcement timeline.
+    EAGLE-3 speculative decoding · TTC Teleport Prague · IAPP DORA+GDPR guide ·
+    EU AI Act enforcement timeline · CZ IT salary surveys (PayLab, Hays, Robert Half) 2026.
   </p>
 </footer>
 
@@ -583,22 +610,21 @@
     }
   });
 
-  new Chart(document.getElementById('monthlyChart'), {
+  new Chart(document.getElementById('fteChart'), {
     type: 'bar',
     data: {
-      labels: ['Dnes', 'Trajektorie 12m', 'A. Serverless', 'B. Dedikovaný', 'C. On-prem (amort.)', 'D. Hyperscaler'],
-      datasets: [{
-        label: 'USD / měs',
-        data: [33, 50, 18, 35.5, 50, 60],
-        backgroundColor: ['#8b949e', '#f85149', '#58a6ff', '#3fb950', '#a371f7', '#f85149'],
-        borderRadius: 6
-      }]
+      labels: ['Platform engineer', 'MLOps engineer', 'DevEx engineer', 'DC ops'],
+      datasets: [
+        { label: 'Scénář A (ongoing)', data: [0.75, 0.1, 0.25, 0], backgroundColor: '#58a6ff', borderRadius: 4 },
+        { label: 'Scénář B (po T-B)', data: [1.0, 1.0, 0.25, 0], backgroundColor: '#3fb950', borderRadius: 4 },
+        { label: 'Scénář C (po T-C)', data: [1.0, 1.5, 0.25, 0.75], backgroundColor: '#a371f7', borderRadius: 4 }
+      ]
     },
     options: {
       maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `$${ctx.parsed.y}k / měs` } } },
+      plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} FTE` } } },
       scales: {
-        y: { beginAtZero: true, ticks: { callback: (v) => '$' + v + 'k' }, grid: { color: '#21262d' } },
+        y: { beginAtZero: true, ticks: { callback: (v) => v + ' FTE' }, grid: { color: '#21262d' } },
         x: { grid: { display: false } }
       }
     }
@@ -607,19 +633,19 @@
   new Chart(document.getElementById('tcoChart'), {
     type: 'bar',
     data: {
-      labels: ['Dnes', 'Trajektorie 12m', 'A. Serverless', 'B. Dedikovaný', 'C. On-prem', 'D. Hyperscaler'],
+      labels: ['Baseline (dnes)', 'Trajektorie 12m', 'A — rok 1', 'A — rok 2+', 'B — rok 1', 'B — rok 2+', 'C — rok 2+'],
       datasets: [{
-        label: '3-letá TCO (mil USD)',
-        data: [1.2, 1.8, 0.65, 1.28, 3.25, 4.0],
-        backgroundColor: ['#8b949e', '#f85149', '#58a6ff', '#3fb950', '#a371f7', '#f85149'],
+        label: 'Full TCO (k USD/rok)',
+        data: [410, 600, 517, 340, 750, 705, 1017],
+        backgroundColor: ['#8b949e', '#f85149', '#58a6ff', '#3fb950', '#d29922', '#a371f7', '#f85149'],
         borderRadius: 6
       }]
     },
     options: {
       maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `$${ctx.parsed.y}M za 3 roky` } } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `$${ctx.parsed.y}k / rok` } } },
       scales: {
-        y: { beginAtZero: true, ticks: { callback: (v) => '$' + v + 'M' }, grid: { color: '#21262d' } },
+        y: { beginAtZero: true, ticks: { callback: (v) => '$' + v + 'k' }, grid: { color: '#21262d' } },
         x: { grid: { display: false } }
       }
     }
