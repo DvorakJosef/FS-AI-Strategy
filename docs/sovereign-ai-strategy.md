@@ -1,11 +1,12 @@
 # Sovereign AI — analýza a návrh pro Finshape (~700 lidí, ~500 vývojářů, banking software)
 
-> Verze: 2026-05-14 (v3 — opravený baseline) · Strategický návrh pro diskuzi s vedením, procurementem a compliance
+> Verze: 2026-05-14 (v4 — full TCO včetně lidské práce, CZ-realistic) · Strategický návrh pro diskuzi s vedením, procurementem, compliance a CFO
 
-> **Poznámka k verzování:** v1 (původní) předpokládala současný spend ~$30k/měs s trajektorií ke $90k/měs.
-> Skutečný současný spend podle uživatele je ~$350-450k/rok (~$30-37k/měs) s pesimistickou trajektorií ke
-> ~$500-700k/rok. Tato verze sjednocuje matematiku. Doporučení v jádru zůstává: Scénář A je už dnes ekonomicky
-> přínosný, Scénář B je rovnocenný a dává cap při dalším růstu.
+> **v3 → v4 update:** v3 počítala jen infrastructure cost (Nebius/OVHcloud/HW), ne lidskou práci.
+> Po dotazu uživatele doplněna sekce 5.5 s plnou TCO včetně FTE a transition costu, kalibrováno na CZ trh
+> (~$95-130k/rok fully-loaded senior engineer v Praze, ne $150k+ US/west-EU). Tím se ekonomika výrazně mění:
+> **Scénář A není okamžitá úspora, je to investice s ROI 12-24 měsíců.** Strategická hodnota (sovereignty,
+> vendor independence, DORA compliance) zůstává; cost-only argument je slabší než v3 implikovala.
 
 ---
 
@@ -13,14 +14,14 @@
 
 **Proč to děláme:** Současný coding stack (Claude Code Team/Max + OpenAI ChatGPT Codex Enterprise pro ~400 vývojářů, ~120 z toho Codex Enterprise) má čtyři dlouhodobé tlaky:
 
-1. **Regulace (DORA, GDPR, ČNB)** — banking software vyžaduje data residency v EU, kontrolu nad third-party dependencies, plný audit trail. Anthropic/OpenAI = US providers s CLOUD Act expozicí; i jejich EU regiony jurisdikčně nejsou imunní.
-2. **Kontrola nákladů** — současný spend ~$350-450k/rok je v rozsahu, kde **Scénář A (serverless) je už dnes přímo levnější** o ~$130-200k/rok. Pokud trajektorie poroste, výhoda se zvětšuje.
-3. **Nezávislost na vendorech** — strategická obrana proti zdražování, změnám politik (rate limits, model deprecation, geografické restrikce), výpadkům.
-4. **Customizace a IP** — fine-tune na interní codebase, doménové znalosti bankingu, vlastní embeddings na interních repozitářích bez exfiltrace do USA.
+1. **Regulace (DORA, GDPR, ČNB)** — banking software vyžaduje data residency v EU, kontrolu nad third-party dependencies, plný audit trail. Anthropic/OpenAI = US providers s CLOUD Act expozicí.
+2. **Kontrola nákladů (revidováno v4)** — současný spend ~$350-450k/rok (~$30-37k/měs, ~$70-95/seat/měsíc). Sovereign infrastruktura je levnější (~$170-260k/rok pro Scénář A), ALE po započtení lidské práce (1-2 FTE platform/MLOps, harness adaptace, transition productivity tax) se rok 1 sovereignu **vyrovná baselineu nebo je mírně dražší**. Reálná úspora ~$25-195k/rok nastává od roku 2+. Detail v sekci 5.5.
+3. **Nezávislost na vendorech** — strategická obrana proti zdražování, změnám politik, výpadkům.
+4. **Customizace a IP** — fine-tune na interní codebase, doménové znalosti bankingu.
 
-**Cíl:** Hybridní architektura, kde **sovereign open-weight stack pokryje 70-80 % denní coding rutiny** (autocompletion, refactoring, code review, vysvětlení, jednoduché agentic úkoly), zatímco **Claude Opus / GPT-5 zůstanou pro nejtěžších 20-30 %** (multi-repo refactor, novel algoritmy, hluboké debugging). Sovereign jako default, frontier proprietary jako escalation.
+**Cíl:** Hybridní architektura, kde **sovereign open-weight stack pokryje 70-80 % denní coding rutiny**, zatímco **Claude Opus / GPT-5 zůstanou pro nejtěžších 20-30 %**. Sovereign jako default, frontier proprietary jako escalation.
 
-**Časový horizont:** Pilot Q4 2026 (15-30 vývojářů), produkční rollout Scénáře A Q1-Q2 2027 (~400 dev), přechod na Scénář B podle decision triggeru (Q3-Q4 2027 nebo později), vyhodnocení on-prem 2028+.
+**Časový horizont:** Fáze 0 strategic decision Q3 2026, Pilot Q4 2026 (15-30 vývojářů), produkční rollout Scénáře A Q1-Q2 2027 (~400 dev), Scénář B podle T-B triggeru (Q4 2027 - 2028).
 
 ---
 
@@ -28,18 +29,19 @@
 
 | Položka | Hodnota |
 |---|---|
-| Skutečný roční spend (2026-05-14) | **~$350-450k / rok ≈ $30-37k / měs** |
+| Roční subscription spend (2026-05-14) | **~$350-450k / rok ≈ $30-37k / měs** |
+| Implicitní lidská práce (seat management, billing) | ~0.1-0.2 FTE ≈ $10-20k/rok |
+| **Baseline full TCO** | **~$360-470k/rok** |
 | Počet aktivních AI uživatelů | ~400 |
-| Průměr na seat | **~$70-95 / seat / měsíc** |
-| Mix licencí (orientačně) | ~120 Codex Enterprise/ChatGPT Business + ~280 Claude Team/Pro + subset Claude Code Max |
-| Trajektorie podle uživatele | "spotřeba postupně roste, víc lidí přechází na premium plány" |
-| 12-měsíční pesimistický odhad bez akce | **~$500-700k / rok ($42-58k / měs)** |
+| Průměr na seat | ~$70-95 / seat / měsíc |
+| Mix licencí (orientačně) | ~120 Codex Enterprise + ~280 Claude Team/Pro + subset Claude Code Max |
+| 12-měsíční pesimistický odhad bez akce | ~$500-700k / rok ($42-58k / měs) |
 
 **Klíčové implikace:**
-- $70-95/seat/měsíc průměr značí, že významná část týmu už dnes využívá premium tier (Claude Code Max, Codex Enterprise heavy users).
-- **Scénář A (serverless) je v této chvíli ekonomicky výhodný** — ~$170-260k/rok vs $350-450k → úspora ~$100-200k/rok hned po rolloutu.
-- **Scénář B (dedikovaný GPU)** je rovnocenný s baseline ($400-440k/rok vs $350-450k), ale zastropuje cenu při dalším růstu (marginal cost téměř nula nad fixní kapacitu) a dává plnou sovereignty.
-- **Scénář C (on-prem)** stále vyžaduje další růst spendu nebo strategickou hodnotu (fine-tuning, max sovereignty) k zdůvodnění.
+- $70-95/seat/měsíc průměr značí, že významná část týmu je už dnes na premium tier.
+- Sovereign **infra** je dnes levnější (~$170-260k/rok pro Scénář A), ale **full TCO včetně FTE** je rovnocenné v rok 1.
+- Reálná cost benefit přichází v rok 2+ (~$25-195k/rok úspora, mid-point ~$110k).
+- Strategická hodnota (sovereignty, DORA, vendor independence) je hlavní argument; čistý cost-saving je sekundární.
 
 ---
 
@@ -47,12 +49,13 @@
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│ ~400 vývojářů (Claude Code / Cline / Roo / Continue / vlastní) │
+│ ~400 vývojářů (Cline / Roo / Aider / opencode / Crush)         │
+│ (transition z Claude Code → open-source harness — viz sekce 5.5)│
 └──────────────────────────┬─────────────────────────────────────┘
                            │ OpenAI-compatible API
                 ┌──────────▼──────────┐
-                │   AI Gateway        │  ← LiteLLM nebo OpenRouter-style
-                │   (Praha/EU, vlastní)│  ← auth, audit log, routing, billing
+                │   AI Gateway        │  ← LiteLLM
+                │   (Praha/EU, vlastní)│  ← auth, audit log, routing
                 └──┬──────┬───────────┘  ← prefix-cache aware routing
                    │      │
         ┌──────────┘      └─────────────┐
@@ -71,13 +74,11 @@
 └───────────────────┘         └──────────────────────┘
 ```
 
-**Klíčové vlastnosti gatewaye (build, ne buy):**
-- OpenAI-compatible endpoint → Claude Code / Codex CLI / Cursor / Cline všechny fungují beze změny
-- Per-user / per-team token budgety, denní/měsíční limity
-- Routing rules: model podle úlohy (inline completion → Codestral; chat → GLM-4.7; agent loop → Qwen3-Coder-480B; hard refactor → Opus)
-- Centralizovaný prefix cache (RadixAttention v SGLang dělá 70-95 % cache hit při Claude Code-style workloadu)
-- Audit log pro DORA (kdo, kdy, jaký prompt, jaký model, output) — uložené v EU
-- Cost dashboard per dev / per team / per repo
+**Klíčové vlastnosti:**
+- OpenAI-compatible endpoint → ostatní harness fungují bez Claude Code
+- Per-user / per-team budgety, audit log pro DORA
+- Routing rules per task type (inline → Codestral, agent → Qwen, chat → GLM)
+- Centralizovaný prefix cache (RadixAttention 70-95 % hit)
 
 ---
 
@@ -85,183 +86,324 @@
 
 | Tier | Model | Licence | Role | Hardware (FP8) |
 |---|---|---|---|---|
-| **Frontier sovereign (primární default)** | **Qwen3-Coder-480B-A35B** | Apache 2.0 ✓ | Default pro agentic coding (Claude Code-like) | 8×H100/H200, ~250 GB FP8 |
-| Frontier sovereign (alternativa) | DeepSeek V4-Pro (1.6T/49B) | MIT ✓ | A/B vs Qwen; nejvyšší SWE-Bench (80.6) | 8×H200/B200, ~800 GB FP8 nebo INT4 |
-| Specialista na long agent loop | Kimi K2.6 (1T/32B) | Modified MIT ⚠️ | Multi-step agent swarm, 300 sub-agents | 8×H200/MI300X, INT4 ~594 GB |
-| Cost-optimized primary | GLM-4.7 (355B/32B) | MIT ✓ | Menší footprint, stále near-frontier | 4×H100 AWQ, ~180 GB |
-| Cheap/fast tier (inline) | **Qwen3-Coder-Next (3B aktivních)** | Apache 2.0 ✓ | Autocompletion, sub-sekundová latence | 1×L40S / A100 |
-| Cheap/fast tier (EU sovereignty plus) | **Codestral 25.08** | Mistral Commercial | FIM autocompletion, FR jurisdikce | 1×H100 |
-| Frontier proprietary (eskalace) | Claude Opus 4.7, GPT-5/Codex | komerční | Hardest 20 % úloh | API |
+| **Frontier sovereign (default)** | **Qwen3-Coder-480B-A35B** | Apache 2.0 ✓ | Agentic coding default | 8×H100/H200, ~250 GB FP8 |
+| Frontier sovereign (alt) | DeepSeek V4-Pro (1.6T/49B) | MIT ✓ | A/B; SWE-Bench 80.6 | 8×H200/B200, ~800 GB FP8 |
+| Long agent loop | Kimi K2.6 (1T/32B) | Modified MIT ⚠️ | 300 sub-agents | 8×H200/MI300X |
+| Cost-optimized primary | GLM-4.7 (355B/32B) | MIT ✓ | Chat & lehčí úlohy | 4×H100 AWQ |
+| Cheap/fast (inline) | **Qwen3-Coder-Next (3B aktivních)** | Apache 2.0 ✓ | Autocompletion | 1×L40S / A100 |
+| Cheap/fast (EU sov+) | **Codestral 25.08** | Mistral Commercial | FIM, FR jurisdikce | 1×H100 |
+| Frontier proprietary | Claude Opus 4.7, GPT-5/Codex | komerční | Hardest 20 % úloh | API |
 
-**Doporučená výchozí kombinace:** Qwen3-Coder-480B (agentic default) + GLM-4.7 (chat/lehčí úlohy) + Codestral 25.08 (inline autocompletion) + Claude Opus (escalation).
+**Doporučená výchozí kombinace:** Qwen3-Coder-480B + GLM-4.7 + Codestral 25.08 + Claude Opus escalation.
 
-**Pozor — EU AI Act enforcement 2. 8. 2026:** Modely čínského původu (Qwen, DeepSeek, GLM, Kimi) vyžadují interní zdůvodnění (security review, hash verifikace vah z HF, plně air-gapped runtime). Provenance compliance je řešitelná, ale ne automatická — počítat s 4-6 týdny právního review.
+**EU AI Act enforcement 2. 8. 2026:** Modely čínského původu vyžadují interní zdůvodnění (security review, hash verifikace vah z HF, plně air-gapped runtime). 4-6 týdnů právního review.
 
 ---
 
-## 5. Scénáře hostingu — srovnání
+## 5. Scénáře hostingu — infrastructure-only srovnání
 
-Všechny ceny v USD/měsíc, EU jurisdikce, 400 vývojářů, ~50-60 souběžných agentic sessions v peaku, ~3.2B tokenů/den celkem (z toho ~30-60M output, ~85-95 % input cached při Claude Code-style workloadu).
+(Lidská práce a transition cost jsou v sekci 5.5.)
 
 ### Scénář A — EU Serverless API (Nebius Token Factory + Mistral)
 
-**Co to je:** Plně managed pay-per-token. Žádný hardware, žádný MLOps, OpenAI-compatible endpoint, EU region (Finsko/Nizozemsko). Nebius je jediný EU hyperscaler, který serveruje plné trillion-param modely (Qwen3-Coder-480B, DeepSeek-V3, Kimi K2, GLM) OOTB. Doplňkově Mistral La Plateforme (FR) pro Codestral inline.
-
 | Položka | $/měs |
 |---|---|
-| Nebius Token Factory — Qwen3-Coder-480B ($0.22 in / $0.90 out), ~2 B tokenů vstup (80% cache), 30 M tokenů output | $8-12k |
+| Nebius Token Factory — Qwen3-Coder-480B + Kimi K2.6 + GLM (~2 B tokenů vstup 80% cache, 30 M output) | $8-12k |
 | Mistral Codestral inline (~10 M output tokenů/den) | $1-2k |
 | Anthropic Opus / OpenAI GPT-5 (escalation, 20% hard tasks) | $4-7k |
-| AI Gateway hosting (1× server + monitoring) | $0.5k |
-| **Celkem** | **~$14-22k/měs ≈ $170-260k/rok** |
+| AI Gateway hosting | $0.5k |
+| **Celkem infra** | **~$14-22k/měs ≈ $170-260k/rok** |
 | CapEx | **$0** |
 | Time-to-launch | **2-4 týdny** |
 
-**Pro:** Nulový operational risk; okamžitý start; škáluje na 0; **ekonomicky levnější už dnes** (~$130-200k/rok úspora vs baseline); ideální pro pilot.
-**Proti:** Sovereignty je "EU jurisdikce + DPA" (silné, ale ne plně air-gapped); per-token cena škáluje s růstem; throughput SLA závisí na tieru; menší schopnost fine-tuningu.
-**DORA posture:** Solidní (Nebius má ISO 27001 + DORA addendum na enterprise tieru, Mistral má FR jurisdikci + plné DPA). Audit a CNB review by měly projít.
+**Pro:** Nulový operational risk; okamžitý start; škáluje na 0; ideální pro pilot.
+**Proti:** "EU jurisdikce + DPA" sovereignty (silné, ale ne plně air-gapped); per-token cena škáluje s růstem.
 
-### Scénář B — Dedikované GPU u EU provideru (Nebius reserved / OVHcloud HGX)
-
-**Co to je:** Pronajatý bare-metal nebo VM 8×H200 cluster, vy ho operujete (vLLM/SGLang), provider dodává HW + síť + DC. Reserved discount 30-50 %. Cena se odpoutá od usage — kapacitní strop.
-
-Doporučení: **Nebius reserved (FI Mäntsälä, NL)** primární, **OVHcloud HGX (FR Roubaix, PL Warszawa)** sekundární. OVHcloud má **SecNumCloud + ISAE 3402 + explicitní DORA exit klauzule** — nejlepší banking-grade kontrakt v EU.
+### Scénář B — Dedikované GPU (Nebius reserved / OVHcloud HGX)
 
 | Položka | $/měs |
 |---|---|
 | 4× 8×H200 reserved 12-měs (Nebius @ ~$5.4k/node) | $22k |
 | Storage, sítě, monitoring, gateway, ops | $4k |
-| Externí MLOps konzultanti (částečný úvazek) | $4k |
+| Externí MLOps konzultanti (částečný úvazek, podpora interní MLOps) | $4k |
 | Anthropic Opus / OpenAI GPT-5 (escalation) | $4-7k |
-| **Celkem** | **~$34-37k/měs ≈ $410-440k/rok** |
+| **Celkem infra** | **~$34-37k/měs ≈ $410-440k/rok** |
 | CapEx | **$0** |
 | Time-to-launch | **6-10 týdnů** |
 
-**Pro:** Plná kontrola nad modelem (fine-tuning, custom routing), žádný vendor lock-in na úrovni vah, predictable pricing, EU jurisdikce, žádný CapEx. **Stejný náklad jako baseline, ale strop ceny při růstu** — pokud usage poroste, marginal cost je téměř nula.
-**Proti:** Při nízkém využití vyšší fixní cost než Scénář A; vyžaduje MLOps schopnost (částečně řešeno externí pomocí); SLA na hardware = závazek od poskytovatele, ne od vás.
-**DORA posture:** Velmi silná u OVHcloud (SecNumCloud); silná u Nebius (ale potřeba review NL/FI jurisdikce). Audit-friendly.
+**Pro:** Plná kontrola, fine-tuning, EU jurisdikce, žádný CapEx, strop ceny při růstu.
+**Proti:** Při nízkém využití dražší než A; vyžaduje MLOps FTE.
 
-### Scénář C — On-prem (4× 8×H200 v Praze nebo brněnském DC)
+### Scénář C — On-prem (4× 8×H200 v Praze)
 
-**Co to je:** Vlastní hardware ve vlastním (nebo colocation) DC. Maximální svrchovanost. Air-gapped možný.
+Stejné jako v3: ~$3.15M 3-letá TCO, +$2M CapEx upfront. **Vyplatí se až při $1M+/rok stabilním baselineu.**
 
-| Položka | 3-letá TCO | Měs. amortizováno (5 let) |
-|---|---|---|
-| 4× HGX H200 8-GPU servery (~$420k/ks) | $1.7M | $28k |
-| Sítě (InfiniBand NDR), storage, řízení | $200k | $3.3k |
-| Colo Praha (~40 kW @ €180/kW/měs all-in) | $250k | $4k |
-| Power (~40 kW × 1.34 PUE × €0.15 × 8760) | $200k | $3.3k |
-| NVIDIA AI Enterprise + HW support | $480k | $8k |
-| Spares, MLOps staffing alokace | $320k | $5.4k |
-| Anthropic/OpenAI escalation | – | $4-7k |
-| **Celkem 3-letá TCO** | **~$3.15M** | **~$56-60k/měs ≈ $670-720k/rok** |
-| **Stejné, 5-letá TCO** | **~$3.5M** | **~$48-52k/měs ≈ $580-625k/rok** |
-| CapEx prvních 6 měsíců | **~$2.0M** | – |
-| Time-to-launch | **4-7 měsíců** | – |
+### Scénář D — Hyperscaler EU
 
-**Pro:** Maximální sovereignty (full air-gap možný), nejlepší pro DORA/CNB review, po roce 5 marginalní náklady ~$15-20k/měs (jen power+colo+escalation), strategická aktiva. Možnost spustit i tréninkové úlohy (fine-tuning na interní codebase).
-**Proti:** Vysoký CapEx upfront ($2M), inflexibilita (těžké škálovat dolů), HW lead-time + commissioning. **Vyplatí se až když by spend na Scénáři B stabilně přesáhl $600-700k/rok.**
-
-### Scénář D — Hyperscaler EU region (AWS Bedrock / Azure / GCP)
-
-**Co to je:** Cloud-native, EU region, ale **US-vlastněný provider** — CLOUD Act se aplikuje i na ESC (AWS European Sovereign Cloud). **Nedoporučeno pro banking compliance.**
+**Nedoporučeno** kvůli CLOUD Act expozici.
 
 ---
 
-## 6. Break-even analýza — kdy který scénář dává finanční smysl
+## 5.5 Lidská práce & transition cost (CZ-realistic) — NOVÉ v4
 
-**Výchozí stav:** ~$350-450k / rok subscription spend (mid-point ~$400k/rok ≈ $33k/měs).
+Čísla v sekci 5 jsou **infrastructure-only**. Reálná TCO musí zahrnovat:
+(1) FTE pro provoz, (2) jednorázovou harness adaptaci (přechod Claude Code → open-source), (3) change management & training pro 400 dev, (4) productivity tax během transition.
 
-| Scénář | Roční náklad | Vs baseline ($400k) | Závěr |
+### 5.5.1 Kalibrace mzdových sazeb (Praha, banking software, 2026)
+
+Senior engineer v Praze, fully loaded (gross + ~34 % payroll taxes + benefits + overhead):
+
+| Role | TC gross/rok | Fully loaded náklad zaměstnavatele |
+|---|---|---|
+| Senior platform / DevOps engineer | ~€70-85k | **~$95-115k/rok** |
+| Senior MLOps engineer (CZ premium, malý talent pool) | ~€85-100k | **~$115-130k/rok** |
+| Senior DevEx engineer | ~€60-75k | **~$80-100k/rok** |
+| Senior backend developer | ~€65-80k | **~$90-110k/rok** |
+| Hourly fully loaded (interní senior) | — | **~$50-58/h** |
+| Externí konzultant senior MLOps | 2000-3000 CZK/h | **~$85-130/h** |
+| Externí konzultant senior platform | 1500-2500 CZK/h | **~$65-105/h** |
+
+Fully-loaded CZ senior engineer = ~60-75 % US/west-EU ekvivalentu.
+
+### 5.5.2 Co se musí udělat při přechodu Claude Code → open-source harness
+
+Claude Code je proprietary CLI šitý Anthropicem na Claude modely. Sovereign cesta vyžaduje:
+
+| Komponenta | Co | Effort |
+|---|---|---|
+| **Harness volba/fork** | Cline / Roo / Aider / opencode / Crush — vybrat + případně forknout. Žádný open-source harness není 1:1 ekvivalent Claude Code (chybí MCP, hooks, subagent dispatch, slash commands). | 80-200 h |
+| **System prompts adaptace** | Claude má svá specifika (XML thinking, tool_use). Qwen3-Coder má harmony format, GLM-4.7 má jiný tool-call template. Per model. | 120-300 h |
+| **Tool-use plumbing** | Transformace mezi modely. Edge cases: parallel calls, error recovery. | 100-200 h |
+| **Diff aplikace + file mgmt** | Claude Code má robust diff engine. Open-source alternativy mají jiná chování. | 60-150 h |
+| **MCP integrace** | Claude Code má MCP servery. Open-source většinou ne. | 100-250 h |
+| **Slash commands, hooks, subagents** | Claude Code feature. Vlastní implementace. | 60-150 h |
+| **Evaluation suite** | Internal SWE-Bench (50 reálných úloh) + regression testing. | 80-150 h |
+| **Pre-prod integrace** | PR review, CI hooks, linting workflows. | 40-100 h |
+| **Celkem harness adaptace** | | **~640-1500 h** |
+
+Mix interní (~$55/h) + externí (~$95/h) v poměru 60/40 → **~$45-115k jednorázové, plus 0.2-0.3 FTE údržba** (model updates, breaking changes upstream).
+
+### 5.5.3 FTE allocation per scénář
+
+| Role | Scénář A | Scénář B (po T-B) | Scénář C (po T-C) |
 |---|---|---|---|
-| **A. EU Serverless** | ~$170-260k | **−35 až −58 % (úspora $90-230k/rok)** | ✅ Levnější už dnes |
-| **B. Dedikovaný GPU rental** | ~$410-440k | ±0 až +10 % (≈ rovnocenný) | ⚖️ Stejný náklad, sovereignty + cap |
-| **C. On-prem (5-letá amort.)** | ~$580-625k + $2M CapEx | +45-55 % | ❌ Vyplatí se až při spendu ~$600k+/rok |
-| **D. Hyperscaler EU** | $300k - $2.4M | mix | ❌ CLOUD Act |
+| Platform engineer (gateway, monitoring, billing) | 0.5-1.0 FTE | 1.0 FTE | 1.0 FTE |
+| MLOps engineer (vLLM/SGLang, model serving) | 0.0-0.2 FTE (serverless) | 1.0 FTE | 1.5 FTE |
+| DevEx engineer (harness, training, support) | 0.5 → 0.25 FTE | 0.25 FTE | 0.25 FTE |
+| DC ops / HW lifecycle | 0 | 0 | 0.5-1.0 FTE |
+| **Total FTE ongoing (rok 2+)** | **~0.75-1.45 FTE** | **~2.25 FTE** | **~3.25-4.25 FTE** |
+| **Roční náklad CZ rates (mid-point)** | **~$80-150k/rok** | **~$240-260k/rok** | **~$355-475k/rok** |
 
-### 6.1 Break-even body (kdy přepnout v rámci sovereign cesty)
+Část lze absorbovat existujícím platform/DevOps týmem, část vyžaduje nový headcount:
+- Scénář A: 0.5 absorbováno + 0.5 nový headcount = ~$50-70k nový roční náklad
+- Scénář B: + 1.0 FTE MLOps premium = ~+$115-130k nový roční náklad
+- Scénář C: + 1-2 FTE DC ops = ~+$200k nový roční náklad
+
+**CZ talent pool risk:** Senior MLOps s vLLM/SGLang/CUDA expertise je v ČR vzácný. Hiring 6-9 měs. + ramp-up 3-6 měs. = 9-15 měs. od decision do plné produktivity. Krátkodobě externí konzultanti ($85-130/h).
+
+### 5.5.4 Change management & training
+
+Rollout na 400 dev:
+- DevEx + Platform 200-400 h × $55/h interní = ~$11-22k
+- Externí materiály, workshop: ~$5-10k
+- Internal champions program (10-15 vývojářů): absorbováno
+- **Total change management jednorázové: ~$15-35k**
+
+### 5.5.5 Productivity tax během transition
+
+- Realistic: 400 dev × 5 % × 10 týdnů × 40 h × $52/h = **~$42k**
+- Worst case: 400 dev × 10 % × 14 týdnů × 40 h × $52/h = **~$117k**
+- Best case (smooth rollout): **~$15-30k**
+- **Realistický range: $40-100k jednorázové**
+
+Pilot ve Fázi 1 (15-30 dev) tento risk redukuje.
+
+### 5.5.6 Plná TCO (CZ kontextu)
+
+**Scénář A — rok 1 (transition):**
+
+| Položka | Náklad |
+|---|---|
+| Infrastructure (Nebius + Mistral + escalation) | $170-260k |
+| Platform FTE (0.5-1.0, mix nový + absorbováno) | $50-115k |
+| DevEx FTE 0.5 (jen rok 1) | $40-50k |
+| Harness adaptace (jednorázové) | $45-115k |
+| Change management & training (jednorázové) | $15-35k |
+| Productivity tax (jednorázové) | $40-100k |
+| **Celkem rok 1** | **~$360-675k** |
+
+**Scénář A — rok 2+ (ongoing):**
+
+| Položka | Náklad |
+|---|---|
+| Infrastructure | $170-260k |
+| Platform FTE 0.5-1.0 | $50-115k |
+| DevEx FTE 0.25 | $20-25k |
+| Harness maintenance (0.2 FTE) | $15-25k |
+| **Celkem rok 2+** | **~$255-425k/rok** |
+
+vs baseline $360-470k/rok full TCO:
+- **Rok 1: rovnocenné až mírně dražší** (-$110k až +$315k vs baseline)
+- **Rok 2+: úspora ~$25-195k/rok** (mid-point ~$110k/rok)
+- **3-letá TCO Scénáře A: ~$870-1525k**, vs baseline $1080-1410k → break-even ke 3 rokům
+
+**Scénář B — ongoing (po T-B):**
+
+| Položka | Náklad |
+|---|---|
+| Infrastructure (Nebius/OVHcloud reserved) | $410-440k |
+| Platform FTE 1.0 | $100-115k |
+| MLOps FTE 1.0 (CZ premium, nový headcount) | $115-130k |
+| DevEx FTE 0.25 | $20-25k |
+| Harness/eval maintenance (0.3 FTE) | $25-30k |
+| **Celkem ongoing rok 2+** | **~$670-740k/rok** |
+
+vs baseline: **vyplatí se jen pokud spend by jinak rostl ke $700-900k/rok**. Pokud baseline stagnuje, B = sovereignty premium ~$220-380k/rok.
+
+### 5.5.7 Co tahle ekonomika znamená pro doporučení
+
+Strategický argument zůstává:
+- DORA compliance, vendor independence, banking IP customization = strategická hodnota, kterou cost-only TCO nezachycuje
+- Skrytá rizika baseline (rate-limit produktivita, vendor concentration) přidávají kvantifikovatelné ~$200-500k/rok rizika
+- Sovereign dává zastropování při budoucím růstu (1M+ subscription scenarios)
+
+Cost-only argument je slabší než v3 implikovala:
+- "Úspora ~$130-200k/rok" z v3 platila jen pro infrastructure
+- **Rok 1: cost-neutral nebo mírná investice** (~$0-300k)
+- **Rok 2+: úspora ~$25-195k/rok** (mid ~$110k)
+- **ROI break-even: 12-24 měsíců**
+
+**Pro stakeholdery: toto NENÍ cost-saving move; je to strategický posun s mírnou cost benefit v dlouhodobém horizontu.** Pokud chcete čistou úsporu rychle, sovereign není nástroj. Pokud chcete sovereignty + dlouhodobou nezávislost + odolnost vůči AI vendor turbulencím, sovereign dává smysl i s touto upravenou TCO.
+
+---
+
+## 6. Break-even analýza — full TCO včetně lidské práce (v4)
+
+**Výchozí stav:** baseline full TCO ~$360-470k/rok ($350-450k subscription + ~$10-20k implicit FTE).
+
+| Scénář | Rok 1 (s transition) | Rok 2+ ongoing | 3-letá TCO | vs baseline ($410k) |
+|---|---|---|---|---|
+| **A. EU Serverless** | ~$360-675k | **~$255-425k/rok** | **~$870-1525k** | Rok 1 ≈ stejné, rok 2+ úspora ~$25-195k/rok |
+| **B. Dedikovaný GPU rental** | ~$700-800k | **~$670-740k/rok** | **~$2.0-2.3M** | Dražší o $220-390k/rok (vyplatí se jen při růstu) |
+| **C. On-prem (5-letá amort.)** | + $2M CapEx | ~$935-1100k/rok | $4.9M + $2M | Jen při $1M+/rok stabilním baselineu |
+| **D. Hyperscaler EU** | mix | mix | mix | ❌ CLOUD Act |
+
+### 6.1 Break-even body
 
 | Akce | Spustit když | Logika |
 |---|---|---|
-| **A → spuštění** | Spend ≥ $250k/rok | Při $350-450k baseline (~$70-95/seat/měs) je A pod hranicí, **dnes ✓** |
-| **A → B přechod** | Spend roste ke $420k+/rok (~$35k/měs) **NEBO** vlastní GPU dává jiné benefity (fine-tune, kapacita guaranteed, větší sovereignty) | B = fixní strop ceny; A roste s usage |
-| **B → C přechod** | Spend na Scénáři B by dlouhodobě přesáhl $700k/rok **A** Scénář B utilizace 75 %+ | On-prem se vyplatí jen při vysoké, stabilní zátěži |
+| **A → spuštění** | Spend ≥ $350k/rok **A** ochota investovat ~$0-300k v roce 1 pro úsporu $25-195k/rok od roku 2+ **A/NEBO** strategická hodnota sovereignty/DORA/vendor independence | Cost-only: rok 1 ≈ break-even, rok 2+ úspora; ROI 12-24 měs. |
+| **A → B přechod** | Spend roste ke $700k+/rok subscription **NEBO** Scénář A nestačí kapacitně **NEBO** fine-tuning vyžadován | B je dražší než A (~+$400k/rok), vyplatí se jen při růstu nebo strategickém benefitu |
+| **B → C přechod** | Spend na Scénáři B by přesáhl $1M/rok **A** Scénář B utilizace 75 %+ | On-prem TCO ~$935-1100k/rok |
 
-### 6.2 Sensitivity — co se stane při různých scénářích růstu
+### 6.2 Sensitivity — růstové scénáře (full TCO)
 
-| Růstová trajektorie (next 24 měs.) | Roční spend | Optimální volba |
-|---|---|---|
-| Stagnuje na současné úrovni | $350-450k | **A** (úspora $90-230k/rok) |
-| Mírný růst (více Max plans) | $500-600k | **A** nebo přechod **A → B** podle utilizace |
-| Silný růst (plošná Max adopce, heavy usage) | $700-900k | **B** (úspora $270-450k/rok, kapacita zastropována) |
-| Extrémní (Codex Enterprise heavy + Max + API overages) | $1M+ | **B nebo C** |
+| Trajektorie subscription baseline | Subscription | Scénář A rok 2+ | Optimální |
+|---|---|---|---|
+| Stagnuje | $350-450k | $255-425k | **A** úspora $25-195k/rok + sovereignty |
+| Mírný růst | $500-600k | $275-450k | **A** úspora $150-300k/rok |
+| Silný růst | $700-900k | $350-550k | **A** úspora $350-500k/rok, **B** úspora $0-200k/rok |
+| Extrémní | $1M+ | $500-700k | **B** dává smysl (kapacita zastropována) |
 
 ### 6.3 Sensitivity — co když Anthropic/OpenAI zdraží
 
-| Zdražení (2 roky) | Roční spend | Optimální volba |
-|---|---|---|
-| +20 % (běžná inflace) | $420-540k | **A** vyhrává silně, **B** mírně |
-| +50 % (Max stoupne na $150) | $525-675k | **A** masivně vyhrává, **B** vyhrává |
-| 2× (politická change, EU regulace) | $700-900k | **B** je no-brainer; **C** v úvahu |
+| Zdražení (2 roky) | Subscription | Scénář A ongoing | Závěr |
+|---|---|---|---|
+| +20 % (inflace) | $420-540k | $255-425k | **A** úspora $0-285k/rok |
+| +50 % (Max → $150) | $525-675k | $275-450k | **A** úspora $75-400k/rok |
+| 2× (politická change) | $700-900k | $300-475k | **A** silně vyhrává, **B** rovnocenný |
 
-### 6.4 Skrytá rizika baseline (ne v ceně dnes)
+### 6.4 Skrytá rizika baseline
 
-- **DORA non-compliance cost** — pokud současný US-vázaný stack neprochází DORA reviewem, fixed cost remediace (extra DPA, audit, doplňková kontrola) může přidat $50-150k/rok jen na compliance overhead. Sovereign tento problém řeší strukturálně.
-- **Rate limit & throttling cost** — vývojáři ztrácejí čas, když Claude Code Max hit limit. Při průměrné mzdě $80/h a 30 min/den × 400 dev × 5 % limit-affected → ~$400k/rok ztracené produktivity. Sovereign cluster nemá tento problém.
-- **Vendor concentration risk** — pokud Anthropic změní enterprise terms (např. omezí Czech banking sector), schopnost migrovat za týden = $0 (sovereign ready) vs měsíce (subscription cancelled, productivity = 0).
+- **DORA non-compliance cost** — pokud current stack neprochází DORA, remediace může přidat $50-150k/rok jen na compliance overhead. Sovereign řeší strukturálně.
+- **Rate limit & throttling cost** — vývojáři ztrácejí čas, když Max hit limit. 400 dev × 5 % limit-affected × 30 min/den × $52/h fully loaded ≈ ~$200-400k/rok ztracené produktivity.
+- **Vendor concentration risk** — pokud Anthropic změní enterprise terms (např. omezí Czech banking sector), migrace s sovereign = týden. Bez sovereign = měsíce + productivity loss.
 
 ---
 
-## 7. Decision triggers — kdy aktivovat kterou fázi
+## 7. Decision triggers — kdy aktivovat kterou fázi (v4)
 
 | Trigger | Status k 2026-05-14 | Akce |
 |---|---|---|
-| **T-A: Spustit Scénář A (pilot)** | ✅ **už splněno** ($400k/rok > $250k práh) | Spustit pilot 15-30 dev v Q4 2026 |
-| **T-B: Přejít na Scénář B (dedikovaný GPU)** | ⏳ Pravděpodobně do 12-18 měs. podle trajektorie | RFP a kontrakt-ready vzít hned, aktivace po validaci A |
-| **T-C: Aktivovat Scénář C (on-prem)** | ⏳ Nepravděpodobné v 24 měs. horizontu | Vyhodnotit 2028 podle reálných dat z B |
-| **T-reg: Regulační vynucení** | ❓ Vyžaduje DORA gap assessment | Pokud T-reg padne, T-A/T-B se zrychlí na týdny |
+| **T-A: Spustit Scénář A (pilot + rollout)** | ⚖️ **Strategic decision** — cost-only argument slabý (rok 1 break-even, rok 2+ úspora ~$25-195k/rok). Spouštět když: (a) sovereignty/DORA hodnota stojí za ~$0-300k rok-1 investici **NEBO** (b) trajektorie spendu míří ke $500k+ rychle | Pokud go: pilot 15-30 dev Q4 2026, rollout Q1-Q2 2027 |
+| **T-B: Přejít na Scénář B** | ⏳ 18-30 měs. (později než v3 odhad — full TCO B výrazně dražší) | RFP a kontrakt-ready hned, aktivace jen při růstu nebo strategickém benefitu |
+| **T-C: Aktivovat Scénář C (on-prem)** | ⏳ Nepravděpodobné v 36 měs. | Vyhodnotit 2028+ jen pokud spend $1M+/rok stabilně |
+| **T-reg: Regulační vynucení** | ❓ Vyžaduje DORA gap assessment — prioritní úkol Fáze 0 | Pokud T-reg padne, cost-only logika přestává platit |
 
 ---
 
-## 8. Doporučená cesta (fázovaná)
+## 8. Doporučená cesta (fázovaná, v4)
 
-### Fáze 1 — Pilot Scénáře A (Q4 2026, 3-4 měsíce, ~$30-50k total)
+### Fáze 0 — Strategic decision + DORA assessment (Q3 2026, 6-8 týdnů, ~$15-25k)
 
-- **Scénář A** (Nebius Token Factory + Mistral La Plateforme) přes vlastní LiteLLM gateway
-- **15-30 vývojářů** napříč týmy (backend, frontend, infra) — různé use cases pro reprezentativní data
-- Modely: Qwen3-Coder-480B (primární agentic) + GLM-4.7 (chat) + Codestral 25.08 (inline autocomplete) + Claude Opus jako escalation
-- Souběžně: RFP pro Scénář B (kontrakt-ready), legal review čínských modelů, DORA gap analysis
+Před spuštěním pilotu mít strategickou jasno:
+- **DORA gap assessment** pro current Claude+Codex stack — určuje, jestli T-reg padne
+- **Vedení Finshape strategicky potvrdí** ochotu investovat $0-300k rok-1 pro úsporu $25-195k/rok od roku 2+ + sovereignty/vendor-independence benefit
+- **Kalibrace FTE absorpce** — kolik z 0.5-1.0 platform FTE absorbuje existující tým, kolik vyžaduje nový headcount
+- **Legal review čínských modelů** (EU AI Act 2. 8. 2026)
 
-**Validation kritéria** (success → jdeme do Fáze 2):
-1. Sovereign obslouží ≥ 70 % denních úloh bez manuální eskalace na Opus
+**Decision gate Fáze 0 → Fáze 1:** Pokud strategická hodnota + cost rationale potvrzeny, pokračovat. Pokud ne, zastavit nebo pivot na "compliance-only" minimal sovereign (jen pro regulovaná data).
+
+### Fáze 1 — Pilot Scénáře A (Q4 2026, 3-4 měsíce, ~$80-130k full TCO)
+
+- **Scénář A** přes vlastní LiteLLM gateway + open-source harness
+- **15-30 vývojářů** napříč týmy
+- Modely: Qwen3-Coder-480B + GLM-4.7 + Codestral 25.08 + Claude Opus escalation
+- **Harness adaptace** (zásadní v této fázi) — výběr & customizace open-source harness, system prompts, tool-use, MCP integrace
+- Souběžně: RFP pro Scénář B (kontrakt-ready), Internal SWE-Bench eval suite
+
+**FTE allocation Fáze 1:**
+- 1.0 FTE platform engineer × 3-4 měs = ~$25-40k
+- 0.5 FTE DevEx × 3-4 měs = ~$11-17k
+- 0.2 FTE legal/security × 3-4 měs = ~$5-10k
+- Externí MLOps konzultant ~50-100 h × $100/h = ~$5-10k
+- Infrastructure cost pilotu (Nebius pay-per-token + Mistral + gateway): ~$5-15k
+- Harness adaptace jednorázové: ~$25-50k engineering (interní + externí)
+- **Total Fáze 1 full TCO: ~$80-130k**
+
+**Validation kritéria (success = jdeme do Fáze 2):**
+1. Sovereign obslouží ≥ 70 % denních úloh bez manuální eskalace
 2. P50 TTFT ≤ 800 ms, decode ≥ 30 tok/s/user
 3. NPS pilotních vývojářů ≥ neutralní
-4. Per-user měsíční cost extrapolovaný na 400 dev ≤ $260k/rok
-5. DORA audit trail je úplný
+4. Per-user cost extrapolovaný na 400 dev ≤ $425k/rok full TCO
+5. DORA audit trail úplný
+6. Harness stabilní (žádné regression vs Claude Code)
+7. SWE-Bench interní: ≥ 75 % kvality Claude Opus
+8. Prefix-cache hit rate ≥ 70 %
 
-**Náklad pilotu:** ~$30-50k total na 3-4 měsíce. Vůči $350-450k/rok baselineu marginální.
+**Go/no-go:** ≥ 6/8 kritérií ✓ → Fáze 2 rollout.
 
-### Fáze 2 — Produkční rollout Scénáře A (Q1-Q2 2027, ~$210-260k/rok)
+### Fáze 2 — Produkční rollout Scénáře A (Q1-Q2 2027)
 
-- Plný rollout na ~400 vývojářů přes Nebius Token Factory
-- Hybrid routing v gatewayi: 70-80 % sovereign, 20-30 % Anthropic/OpenAI escalation
-- **Roční náklad ~$210-260k vs baseline $350-450k → úspora ~$130-200k/rok**
-- Kontrakt-ready pro Scénář B (Nebius reserved nebo OVHcloud), aktivace v 4-8 týdnech, jakmile padne T-B
+- Plný rollout ~400 vývojářů přes Nebius Token Factory
+- Hybrid routing 70-80 % sovereign / 20-30 % escalation
+- **FTE allocation:**
+  - Platform 0.5-1.0 FTE (~$50-115k/rok)
+  - DevEx 0.5 FTE rok 1, 0.25 FTE rok 2+ (~$25-50k/rok)
+  - Harness maintenance 0.2 FTE (~$15-25k/rok)
+- **Rok 1 (transition) full TCO: ~$360-675k** (rovnocenné s baseline $360-470k nebo mírně dražší)
+- **Rok 2+ (ongoing) full TCO: ~$255-425k/rok** (úspora ~$25-195k/rok, mid ~$110k)
+- Kontrakt-ready pro Scénář B, aktivace 4-8 týdnů po T-B
 
-### Fáze 3 — Přechod na Scénář B (po T-B, pravděpodobně Q3-Q4 2027)
+### Fáze 3 — Přechod na Scénář B (po T-B, Q4 2027 - 2028)
 
 Spouští se, když:
-- Spend na Scénáři A vystoupá ke $35-40k/měs **NEBO**
-- Usage stabilně překračuje serverless throughput SLA **NEBO**
-- Potřeba fine-tuningu na interní banking codebase (vyžaduje dedikovanou kapacitu)
+- Subscription baseline (bez sovereign) by rostl ke $700k+/rok **NEBO**
+- Scénář A nestačí kapacitně **NEBO**
+- Fine-tuning na banking codebase vyžadován
 
-**Náklad:** ~$420-440k/rok (rovnocenný současnému baseline, ale predictable + sovereignty + capacity headroom).
+**FTE allocation B:**
+- + MLOps engineer 1.0 FTE (CZ premium, nový headcount, ~$115-130k/rok)
+- + Platform 0.5 FTE pro on-call (~$50k/rok)
+- Migration jednorázové ~$30-60k
+
+**Full TCO B:** ~$670-740k/rok (vs A ~$255-425k/rok).
 
 ### Fáze 4 — Vyhodnocení Scénáře C (2028+, only-if)
 
-Pouze pokud spend stabilně překračuje $600-700k/rok a Scénář B utilizace je vysoká.
+Jen pokud spend $1M+/rok stabilně + Scénář B utilizace 75 %+.
 
-**Klíčový princip:** Hybrid routing + portable model weights = každá fáze je reverzibilní a triggery (sekce 7) řídí timing.
+**Klíčové principy:** Hybrid routing + portable model weights = reverzibilita. **FTE je nejcennější a nejhůře reverzibilní investice** — nehiring před validovaným pilotem.
 
 ---
 
@@ -269,34 +411,34 @@ Pouze pokud spend stabilně překračuje $600-700k/rok a Scénář B utilizace j
 
 | Riziko | Mitigace |
 |---|---|
-| Anthropic/OpenAI zdraží escalation tier 2-3× | Snížit eskalaci v sovereign fázi, posílit GLM-4.7/Kimi K2.6 jako "near-frontier" |
-| Nebius / EU API zdraží během pilotu | Migrace na dedikovaný GPU rental (Scénář B) — Nebius i OVHcloud nabízejí stejnou cestu, **váhy modelů jsou portovatelné** |
-| EU AI Act zakáže čínské modely | Přepnout primární na Llama 4-Coder (až vyjde) + Codestral; degradace SWE-Bench ~5-10 bodů |
-| OVHcloud / Nebius má výpadek | Multi-region: primary Nebius FI, secondary OVHcloud FR (oboje schopni serverovat stejné Qwen/DeepSeek), gateway routuje automaticky |
-| Vývojáři nepřijmou kvalitu sovereign modelu | Pilot odhalí dřív, než se utopí kapitál; Claude Code Max zůstává v gatewayi jako fallback (degradace, ne nahrazení) |
-| MLOps team nestíhá | Pilot = serverless, žádný GPU cluster → minimální zátěž. Scénář B+ externí kontrakt (managed inference) |
-| Trh GPU zkolabuje a Blackwell/Rubin výrazně zlevní | Žádný CapEx ve Fázích 1-2 — flexibilita zachována |
-
-**Klíčové principy:**
-1. **Váhy modelů jsou portovatelné** — pokud máte Qwen3-Coder-480B stažený, můžete přejít mezi Nebius / OVHcloud / on-prem za týdny.
-2. **Gateway je vaše vlastní** — vendor lock-in je minimální (LiteLLM open-source).
-3. **Hybrid znamená graceful degradation** — pokud sovereign selže, eskalace na Anthropic je transparentní pro vývojáře.
-4. **Triggers řídí cash flow** — žádná velká investice bez splněného triggeru.
+| Anthropic/OpenAI zdraží 2-3× | Snížit eskalaci, posílit GLM-4.7/Kimi K2.6 jako near-frontier |
+| Nebius / EU API zdraží | Migrace na Scénář B — váhy modelů portovatelné |
+| EU AI Act zakáže čínské modely | Llama 4-Coder + Codestral; degradace SWE-Bench 5-10 bodů |
+| Provider výpadek | Multi-region: Nebius FI + OVHcloud FR |
+| Vývojáři nepřijmou kvalitu | Pilot odhalí dřív; Claude Code Max zůstává fallback |
+| MLOps team nestíhá | Pilot = serverless. B+ externí konzultanti během hiringu |
+| GPU trh zlevní | Žádný CapEx v Fázích 1-2 |
+| **Harness adaptace selže** (nové v4) | Pilot ověří. Backup: zůstat na Claude Code pro 30 % traffic, sovereign jen pro 70 % via gateway. |
+| **CZ MLOps hiring delay** (nové v4) | Externí konzultanti $85-130/h jako bridge. Začít hiring v Q3 2026 (Fáze 0). |
+| **Productivity tax horší než odhad** (nové v4) | Champions program, pomalejší rollout (po týmech), preserved Claude Code fallback. |
 
 ---
 
-## 10. Critical items pro pilot (Fáze 1, Q4 2026)
+## 10. Critical items pro pilot (Fáze 1, Q4 2026) — full TCO
 
-| # | Co | Kdo | Kdy | Odhad nákladu |
+| # | Co | Kdo | Kdy | Odhad (CZ rates) |
 |---|---|---|---|---|
-| 1 | **AI Gateway (LiteLLM)** — multi-provider routing, audit log, per-user budgety, cost dashboard, prefix-cache aware routing | Platform team | Týdny 1-3 | ~$6-10k engineering + $1-2k/měs hosting |
-| 2 | **Spend tracking dashboard** — metriky per-dev / per-team / per-repo. T-B trigger watch. | Platform team | Týdny 2-3 | ~$2-3k engineering |
-| 3 | **Nebius Token Factory + Mistral La Plateforme** kontrakt + DPA, OpenAI-compatible endpoint setup | Procurement + Legal + Platform | Týdny 1-4 | ~$3-5k legal review + setup |
-| 4 | **Legal review čínských modelů** vs EU AI Act 2. 8. 2026 — Qwen, DeepSeek, GLM, Kimi. Governance package. | Legal + Security | Týdny 1-6 | ~$5-10k legal/external |
-| 5 | **Pilot rollout** — Claude Code / Codex CLI config přes gateway endpoint pro 15-30 dev | DevEx | Týdny 4-6 | interní |
-| 6 | **DORA gap assessment** pro current state (Claude+Codex US providers) i target state (sovereign) | Compliance | Týdny 4-10 | interní |
-| 7 | **RFP pro Scénář B** (Nebius reserved, OVHcloud HGX) — kontrakt-ready do konce pilotu, aktivace po T-B | Procurement | Týdny 8-12 | ~$3-5k legal |
-| 8 | **Internal SWE-Bench evaluation set** — 50 reprezentativních úloh z reálných PRs pro blind review sovereign vs Opus | Platform team + interní engineering | Týdny 4-8 | interní |
+| 1 | **AI Gateway (LiteLLM)** + audit, budgety, prefix-cache routing | Platform team (1.0 FTE) | Týdny 1-3 | ~$10-15k engineering + $1-2k/měs hosting |
+| 2 | **Spend tracking dashboard** + T-B trigger watch | Platform team | Týdny 2-3 | ~$3-5k engineering |
+| 3 | **Nebius + Mistral kontrakt + DPA** + endpoint setup | Procurement + Legal + Platform | Týdny 1-4 | ~$5-8k legal + setup |
+| 4 | **Legal review čínských modelů** (EU AI Act) | Legal + Security | Týdny 1-6 | ~$5-10k legal/external |
+| 5 | **Harness adaptace** (klíčové) — open-source harness, system prompts, tool-use, MCP, eval | Platform + DevEx + externí MLOps | Týdny 2-12 | ~$25-50k (mix) |
+| 6 | **Pilot rollout** — config přes gateway pro 15-30 dev | DevEx (0.5 FTE) | Týdny 4-6 | interní (v FTE allocation) |
+| 7 | **DORA gap assessment** | Compliance | Týdny 4-10 | interní + ~$5-10k externí audit |
+| 8 | **RFP pro Scénář B** | Procurement | Týdny 8-12 | ~$3-5k legal |
+| 9 | **Internal SWE-Bench eval set** (50 úloh) | Platform + engineering (50-80 h) | Týdny 4-8 | ~$3-5k interní |
+
+**Celkový náklad pilotu (Fáze 1) full TCO:** ~$80-130k. Vůči ~$400k/rok baselineu = ~20-30 % roční investice pro validaci go/no-go.
 
 ---
 
@@ -304,56 +446,73 @@ Pouze pokud spend stabilně překračuje $600-700k/rok a Scénář B utilizace j
 
 **Fáze 1 — pilot success kritéria (go/no-go pro Fázi 2):**
 
-1. **Kvalita** — sovereign model obsluhuje ≥ 70 % denních úloh u pilotních vývojářů bez manuální eskalace na Opus.
-2. **Latence** — P50 TTFT ≤ 800 ms, P50 decode ≥ 30 tok/s/user.
-3. **NPS pilotních vývojářů** ≥ neutralní (sběr po 4-6 týdnech).
-4. **Per-user cost** — extrapolovaný náklad sovereign na 400 dev ≤ $260k/rok (úspora vs baseline).
-5. **SWE-Bench na interních úlohách** — sovereign dosáhne ≥ 75 % kvality Claude Opus na 50 internal tasks blind review.
-6. **DORA audit trail** — 100 % requestů má kompletní záznam v EU.
-7. **Prefix-cache hit rate** — ≥ 70 % na production-like workloadu.
+1. **Kvalita** — sovereign ≥ 70 % denních úloh bez manuální eskalace
+2. **Latence** — P50 TTFT ≤ 800 ms, decode ≥ 30 tok/s/user
+3. **NPS pilotních vývojářů** ≥ neutralní
+4. **Per-user cost extrapolovaný** — full TCO na 400 dev ≤ $425k/rok
+5. **SWE-Bench interní** — sovereign ≥ 75 % kvality Claude Opus
+6. **DORA audit trail** — 100 % requestů
+7. **Prefix-cache hit rate** ≥ 70 %
+8. **Harness stabilita** — žádné regression v dev workflow
 
-**Go/no-go rozhodnutí:** ≥ 5/7 kritérií ✓ → Fáze 2 rollout.
+**Go/no-go:** ≥ 6/8 ✓ → Fáze 2.
 
-**Fáze 2 — produkční rollout success kritéria** (měřeno po 3-6 měs. provozu):
+**Fáze 2 — produkční rollout success kritéria (po 3-6 měs.):**
 
-1. Roční run-rate cost ≤ $260k/rok (vs $350-450k baseline) → úspora 25-40 %
+1. Roční full TCO ≤ $425k/rok rok 2+ (vs $360-470k baseline)
 2. Eskalace na Anthropic/OpenAI ≤ 30 %
 3. Zero compliance incidents v 90-day window
-4. Vývojář NPS neklesl meziročně
+4. Vývojář NPS neklesl meziročně více než 5 bodů
+5. Platform FTE allocation v plánu (≤ 1.0 FTE Platform + ≤ 0.25 FTE DevEx ongoing)
 
 ---
 
 ## 12. Otevřené otázky před spuštěním
 
-- **Composition $350-450k/rok** — kolik je z toho Codex Enterprise (přes ChatGPT Business) vs Claude Team vs Claude Code Max vs API overages? Pomáhá při triggerwatch — který vendor zdraží má jaký dopad.
-- **Trajektorie premium adopce** — kolik vývojářů je už dnes na Claude Code Max ($100-200/seat) a kolik na něj chce přejít? Pokud trend k 100 % Max, T-B se urychlí.
-- **DORA / CNB current posture** — má Finshape aktuální DORA gap assessment, kde figurují AI tools? Pokud non-compliant, T-reg trigger může předběhnout T-A.
-- **Banking IP fine-tune hodnota** — má smysl nechat sovereign model trénovat na interní banking codebase? Kvantifikace přes A/B test ve Fázi 1.
-- **DC preference** — Praha/Frankfurt/Helsinki? Nebius primárně FI/NL, OVHcloud má FR/PL/DE, ale ne CZ — limit pro on-prem Scénář C.
+- **Composition $350-450k/rok** — kolik Codex Enterprise vs Claude Team vs Max vs API overages?
+- **Trajektorie premium adopce** — kolik dev je dnes na Claude Code Max a kolik na něj chce přejít?
+- **DORA / CNB current posture** — má Finshape aktuální DORA gap assessment? Pokud non-compliant, T-reg může předběhnout T-A.
+- **Banking IP fine-tune hodnota** — kvantifikace přes A/B test ve Fázi 1.
+- **DC preference** — Praha/Frankfurt/Helsinki?
+- **FTE absorpce** — kolik z 0.5-1.0 platform FTE může existující platform team absorbovat?
+- **Hiring readiness** — kolik měsíců trvá hire 1 senior MLOps v ČR? Mzdové rozpočtové prostory?
 
 ---
 
-## 13. Next actions po schválení tohoto plánu
+## 13. Next actions po schválení této verze plánu
 
-**Týdny 1-12 (Fáze 1 pilot, Q4 2026):**
-1. Vytvořit nový repo `finshape/ai-gateway` s LiteLLM základem (Apache 2.0) — multi-provider routing, audit, prefix-cache aware routing, cost dashboard.
-2. Iniciovat procurement workflow s Nebius (primární) a Mistral La Plateforme (Codestral inline) + souběžně RFP pro Scénář B (Nebius reserved + OVHcloud HGX).
-3. Iniciovat legal review (EU AI Act + DORA addendum pro Qwen/DeepSeek/GLM/Kimi/Codestral).
-4. Pilot rollout pro 15-30 vývojářů přes gateway.
+**Fáze 0 (Q3 2026, 6-8 týdnů, ~$15-25k):**
+1. **DORA gap assessment** pro current Claude+Codex stack — výsledek určuje, jestli sovereign jde nezávisle na cost ROI
+2. **Vedení Finshape strategicky potvrdí** ochotu investovat $0-300k rok-1 pro úsporu $25-195k/rok od roku 2+ + sovereignty/vendor-independence
+3. **Kalibrace FTE absorpce** — co existující tým absorbuje, co vyžaduje nový headcount
+4. **Legal kick-off:** EU AI Act review pro Qwen/DeepSeek/GLM/Kimi/Codestral
+
+**Fáze 1 pilot (Q4 2026, 3-4 měsíce, ~$80-130k full TCO):**
+1. Vytvořit nový repo `finshape/ai-gateway` s LiteLLM základem
+2. Iniciovat procurement workflow s Nebius a Mistral La Plateforme + RFP pro Scénář B
+3. **Harness adaptace** — výběr open-source harness (Cline / Roo / Aider / opencode / Crush), system prompts, tool-use plumbing, MCP integrace, eval harness
+4. Pilot rollout pro 15-30 vývojářů. Měření 8 KPIs.
+5. Externí MLOps konzultant (advisory) pro vLLM/SGLang fundamentals
 
 **Po pilotu (Q1-Q2 2027):**
-- Pokud kritéria splněna → rollout Scénáře A na ~400 dev → **roční úspora ~$130-200k**.
-- Souběžně připravený kontrakt Scénáře B (aktivace 4-8 týdnů po T-B triggeru).
+- Pokud 6/8 kritérií splněno → rollout Scénáře A na ~400 dev
+- Rok 1 full TCO ~$360-675k (rovnocenné s baseline), rok 2+ ~$255-425k/rok (úspora ~$25-195k/rok mid ~$110k)
+- Kontrakt-ready pro Scénář B (aktivace 4-8 týdnů po T-B)
+
+**Hiring strategie:**
+- Začít hned (Q3 2026) hledat 1.0 FTE senior platform/MLOps engineer — CZ talent pool malý, timeline 6-9 měs.
+- Externí konzultanti ($85-130/h CZ) jako gap-filler
 
 ---
 
 ## Zdroje a podklady
 
-- Modely a benchmarky: SWE-Bench Verified leaderboard, Qwen/Hugging Face, DeepSeek HF, GLM HF, Kimi K2.6 release notes, Codestral 25.08 announcement
-- EU providers: Nebius Token Factory pricing, OVHcloud AI Endpoints + HGX bare-metal, Scaleway/IONOS/Mistral La Plateforme pricing pages
-- Inference performance: vLLM/SGLang docs, DeepSeek-V3 H100/H200 benchmark studies, EAGLE-3 / MTP speculative decoding production data
-- Hardware ceny + lead-times: Jarvislabs H100/H200 guides, SemiAnalysis Blackwell shipment, ServeTheHome Gaudi3
-- Colocation Praha: TTC Teleport, Voxility, DataCenterHawk EU 2026 fundamentals
-- Regulační: IAPP DORA+GDPR guide, EU AI Act enforcement timeline (2. 8. 2026), AWS ESC sovereignty assessment
+- Modely a benchmarky: SWE-Bench Verified leaderboard, Qwen/HF, DeepSeek HF, GLM HF, Kimi K2.6, Codestral 25.08
+- EU providers: Nebius Token Factory pricing, OVHcloud HGX bare-metal, Mistral La Plateforme
+- Inference: vLLM/SGLang docs, DeepSeek-V3 H100/H200 benchmarks, EAGLE-3 speculative decoding
+- Hardware: Jarvislabs H100/H200 guides, SemiAnalysis Blackwell shipment
+- Colocation: TTC Teleport Praha, DataCenterHawk EU 2026
+- Regulační: IAPP DORA+GDPR guide, EU AI Act enforcement 2. 8. 2026, AWS ESC sovereignty
+- CZ mzdové sazby: PayLab/Profesia 2026, Czech IT salary survey (Hays/Robert Half)
 
 Vizuální shrnutí: viz [`sovereign-ai-strategy.html`](./sovereign-ai-strategy.html).
