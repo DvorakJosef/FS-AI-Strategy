@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sovereign AI — strategický návrh pro Finshape (v3)</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-card: #161b22;
+    --bg-card-2: #1c2330;
+    --fg: #e6edf3;
+    --fg-muted: #8b949e;
+    --accent: #58a6ff;
+    --accent-green: #3fb950;
+    --accent-amber: #d29922;
+    --accent-red: #f85149;
+    --accent-purple: #a371f7;
+    --border: #30363d;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1180px; margin: 0 auto; padding: 32px 24px; }
+  header.hero { padding: 56px 0 32px; border-bottom: 1px solid var(--border); }
+  header.hero .eyebrow { color: var(--accent); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; font-size: 13px; margin-bottom: 12px; }
+  header.hero h1 { font-size: 42px; line-height: 1.15; margin: 0 0 16px; letter-spacing: -0.02em; }
+  header.hero .lead { font-size: 18px; color: var(--fg-muted); max-width: 820px; }
+  header.hero .meta { margin-top: 24px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 13px; color: var(--fg-muted); }
+  header.hero .meta strong { color: var(--fg); }
+  nav.toc { display: flex; gap: 8px; flex-wrap: wrap; padding: 16px 0 0; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+  nav.toc a { color: var(--fg-muted); text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 13px; transition: background .15s, color .15s; }
+  nav.toc a:hover { background: var(--bg-card); color: var(--fg); }
+  section { margin-bottom: 56px; }
+  section h2 { font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  section .sub { color: var(--fg-muted); margin: 0 0 24px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } header.hero h1 { font-size: 32px; } }
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+  .card h3 { margin: 0 0 8px; font-size: 17px; }
+  .card .num { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin: 8px 0 4px; }
+  .card .num.small { font-size: 28px; }
+  .card .num.green { color: var(--accent-green); }
+  .card .num.amber { color: var(--accent-amber); }
+  .card .num.red { color: var(--accent-red); }
+  .card .num.blue { color: var(--accent); }
+  .card .desc { color: var(--fg-muted); font-size: 14px; }
+  .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+  .chart-card h3 { margin: 0 0 4px; font-size: 17px; }
+  .chart-card .chart-sub { color: var(--fg-muted); font-size: 13px; margin-bottom: 16px; }
+  .chart-wrap { position: relative; height: 340px; }
+  .chart-wrap.tall { height: 420px; }
+  table.compare { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 12px; }
+  table.compare th, table.compare td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  table.compare th { color: var(--fg-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  table.compare tr:last-child td { border-bottom: none; }
+  table.compare .winner { color: var(--accent-green); font-weight: 600; }
+  table.compare .loss { color: var(--accent-red); }
+  table.compare .even { color: var(--fg); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+  .badge.green { background: rgba(63, 185, 80, 0.15); color: var(--accent-green); }
+  .badge.amber { background: rgba(210, 153, 34, 0.15); color: var(--accent-amber); }
+  .badge.red { background: rgba(248, 81, 73, 0.15); color: var(--accent-red); }
+  .badge.blue { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+  .badge.purple { background: rgba(163, 113, 247, 0.15); color: var(--accent-purple); }
+  .arch-diagram { background: var(--bg-card-2); border: 1px solid var(--border); border-radius: 12px; padding: 32px; font-family: "SF Mono", Menlo, Monaco, Consolas, monospace; font-size: 13px; line-height: 1.5; }
+  .arch-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 8px auto; text-align: center; max-width: 100%; }
+  .arch-block.gateway { border-color: var(--accent); background: rgba(88, 166, 255, 0.08); }
+  .arch-block.sovereign { border-color: var(--accent-green); background: rgba(63, 185, 80, 0.08); text-align: left; }
+  .arch-block.frontier { border-color: var(--accent-amber); background: rgba(210, 153, 34, 0.08); text-align: left; }
+  .arch-block strong { display: block; font-size: 14px; margin-bottom: 6px; }
+  .arch-block ul { margin: 4px 0 0; padding-left: 20px; font-size: 12px; }
+  .arch-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+  @media (max-width: 700px) { .arch-row { grid-template-columns: 1fr; } }
+  .arrow { text-align: center; color: var(--fg-muted); font-size: 18px; margin: 2px 0; }
+  .triggers-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .triggers-table td, .triggers-table th { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+  .triggers-table th { font-size: 12px; text-transform: uppercase; color: var(--fg-muted); letter-spacing: 0.05em; }
+  .roadmap { display: grid; grid-template-columns: 100px 1fr 1fr 1fr 1fr; gap: 4px; font-size: 13px; }
+  .roadmap .head { color: var(--fg-muted); font-weight: 600; text-transform: uppercase; font-size: 11px; padding: 8px 6px; text-align: center; border-bottom: 1px solid var(--border); }
+  .roadmap .label { padding: 14px 8px; color: var(--fg-muted); font-size: 12px; }
+  .roadmap .bar { margin: 8px 0; padding: 14px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; line-height: 1.3; }
+  .roadmap .bar.a { background: linear-gradient(90deg, rgba(88, 166, 255, 0.15), rgba(88, 166, 255, 0.25)); color: var(--accent); border: 1px solid rgba(88, 166, 255, 0.3); grid-column: span 2; }
+  .roadmap .bar.b { background: linear-gradient(90deg, rgba(63, 185, 80, 0.15), rgba(63, 185, 80, 0.25)); color: var(--accent-green); border: 1px solid rgba(63, 185, 80, 0.3); grid-column: span 4; }
+  .roadmap .bar.c { background: linear-gradient(90deg, rgba(163, 113, 247, 0.15), rgba(163, 113, 247, 0.25)); color: var(--accent-purple); border: 1px solid rgba(163, 113, 247, 0.3); grid-column: span 2; }
+  .risk-list { padding: 0; list-style: none; margin: 0; }
+  .risk-list li { padding: 14px 0; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 220px 1fr; gap: 16px; font-size: 14px; }
+  .risk-list li:last-child { border-bottom: none; }
+  .risk-list .risk { color: var(--accent-amber); font-weight: 500; }
+  .actions { counter-reset: step; padding: 0; list-style: none; margin: 0; }
+  .actions li { counter-increment: step; padding: 14px 0 14px 48px; position: relative; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .actions li:last-child { border-bottom: none; }
+  .actions li::before { content: counter(step); position: absolute; left: 0; top: 12px; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: white; text-align: center; line-height: 32px; font-weight: 700; font-size: 13px; }
+  .actions li strong { display: block; margin-bottom: 4px; }
+  .actions li .when { color: var(--fg-muted); font-size: 12px; }
+  footer { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--border); color: var(--fg-muted); font-size: 13px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  .callout { background: rgba(88, 166, 255, 0.08); border-left: 3px solid var(--accent); padding: 16px 20px; margin: 24px 0; border-radius: 6px; font-size: 14px; }
+  .callout.amber { background: rgba(210, 153, 34, 0.08); border-left-color: var(--accent-amber); }
+  .callout.green { background: rgba(63, 185, 80, 0.08); border-left-color: var(--accent-green); }
+  .callout strong { color: var(--fg); }
+  .version-note { background: rgba(210, 153, 34, 0.08); border-left: 3px solid var(--accent-amber); padding: 16px 20px; margin: 16px 0 32px; border-radius: 6px; font-size: 13px; color: var(--fg-muted); }
+  @media print {
+    body { background: white; color: black; }
+    .card, .chart-card, .arch-diagram { border-color: #ccc; background: white; }
+    nav.toc { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="hero">
+  <div class="eyebrow">Strategický návrh · v3 · 2026-05-14</div>
+  <h1>Sovereign AI pro Finshape</h1>
+  <p class="lead">
+    Hybridní architektura, kde sovereign open-weight modely (Qwen3-Coder, DeepSeek V4, GLM-4.7)
+    pokryjí 70-80&nbsp;% denní coding rutiny v EU jurisdikci, zatímco Claude Opus a GPT-5
+    zůstanou pro nejtěžších 20-30&nbsp;% úloh.
+  </p>
+  <div class="meta">
+    <span><strong>~500</strong> vývojářů</span>
+    <span><strong>~400</strong> aktivních AI uživatelů</span>
+    <span>Banking software · <strong>DORA/GDPR</strong> compliance</span>
+    <span>Současný spend <strong>~$350-450k/rok</strong> ($30-37k/měs)</span>
+    <span>Průměr <strong>~$70-95/seat/měs</strong></span>
+  </div>
+</header>
+
+<div class="version-note">
+  <strong>v3 (2026-05-14):</strong> Tato verze opravuje baseline z v1/v2 — skutečný současný spend je ~$350-450k/rok
+  (~$30-37k/měs), trajektorie roste k ~$500-700k/rok. Při tomto baseline je <strong>Scénář A okamžitě levnější
+  (~$130-200k/rok úspora)</strong>, Scénář B je rovnocenný a dává price ceiling při růstu, on-prem stále čeká na další růst.
+</div>
+
+<nav class="toc">
+  <a href="#tldr">TL;DR</a>
+  <a href="#architecture">Architektura</a>
+  <a href="#models">Modely</a>
+  <a href="#scenarios">Scénáře hostingu</a>
+  <a href="#costs">Rozpočet</a>
+  <a href="#triggers">Triggers</a>
+  <a href="#roadmap">Roadmap</a>
+  <a href="#risks">Rizika</a>
+  <a href="#actions">Další kroky</a>
+</nav>
+
+<section id="tldr">
+  <h2>TL;DR — co a proč</h2>
+  <p class="sub">Klíčová zjištění a doporučení.</p>
+  <div class="grid-4">
+    <div class="card">
+      <span class="badge blue">Motivace</span>
+      <div class="num blue">4×</div>
+      <div class="desc">Současně tlačí DORA/GDPR, rostoucí spend, vendor lock-in a potřeba customizace na banking IP.</div>
+    </div>
+    <div class="card">
+      <span class="badge green">Doporučení</span>
+      <div class="num green">A → B</div>
+      <div class="desc">Pilot Scénář A (Nebius serverless) Q4 2026, rollout 400 dev Q1-Q2 2027, přechod na B podle triggeru.</div>
+    </div>
+    <div class="card">
+      <span class="badge green">Roční úspora</span>
+      <div class="num green small">$130-200k</div>
+      <div class="desc">Scénář A vs současný baseline $350-450k/rok. Při růstu spendu se výhoda zvětšuje.</div>
+    </div>
+    <div class="card">
+      <span class="badge amber">Klíčové KPI</span>
+      <div class="num amber">≥70%</div>
+      <div class="desc">Cílový share trafiku obsloužený sovereign modelem bez eskalace na Opus + prefix-cache hit ≥80%.</div>
+    </div>
+  </div>
+  <div class="callout">
+    <strong>Hybrid není ústupek.</strong> Sovereign primary + Anthropic/OpenAI fallback dává nejlepší kvalitu
+    pro nejtěžších 20&nbsp;% úloh, suverenitu pro zbytek, a graceful degradation pokud sovereign selže.
+    Žádný "big bang", žádné riskování produktivity 500 vývojářů.
+  </div>
+</section>
+
+<section id="architecture">
+  <h2>Cílová architektura</h2>
+  <p class="sub">Vlastní AI Gateway routuje request podle typu úlohy.</p>
+  <div class="arch-diagram">
+    <div class="arch-block">
+      <strong>~400 vývojářů</strong>
+      <span style="color: var(--fg-muted); font-size: 12px;">Claude Code · Codex CLI · Cline · Cursor · Continue · vlastní harness</span>
+    </div>
+    <div class="arrow">↓ OpenAI-compatible API</div>
+    <div class="arch-block gateway">
+      <strong>AI Gateway (LiteLLM, EU hosting)</strong>
+      <span style="color: var(--fg-muted); font-size: 12px;">
+        Auth · per-user budgety · prefix-cache aware routing · audit log (DORA, retention 6 let) · cost dashboard
+      </span>
+    </div>
+    <div class="arrow">↓ ↓</div>
+    <div class="arch-row">
+      <div class="arch-block sovereign">
+        <strong style="color: var(--accent-green);">Sovereign primary · 70-80 % trafiku</strong>
+        <ul>
+          <li><strong>Qwen3-Coder-480B-A35B</strong> · Apache 2.0 · agentic default</li>
+          <li><strong>GLM-4.7</strong> (355B/32B) · MIT · chat &amp; lehčí úlohy</li>
+          <li><strong>DeepSeek V4-Pro</strong> · MIT · A/B vs Qwen</li>
+          <li><strong>Codestral 25.08</strong> · FR · inline autocompletion</li>
+          <li><strong>Qwen3-Coder-Next</strong> (3B) · cheap/fast tier</li>
+        </ul>
+      </div>
+      <div class="arch-block frontier">
+        <strong style="color: var(--accent-amber);">Frontier proprietary · 20-30 % hard tasks</strong>
+        <ul>
+          <li><strong>Claude Opus 4.7</strong> · multi-repo refactor, novel algorithms</li>
+          <li><strong>GPT-5 / GPT-5-Codex</strong> · hluboké debugging</li>
+          <li>Přes existující enterprise smlouvy</li>
+          <li>Graceful escalation, transparentní pro dev</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="models">
+  <h2>Modely — kvalita vs sovereignty</h2>
+  <p class="sub">SWE-Bench Verified score (vyšší = lepší schopnost vyřešit reálné GitHub issue). Open-weight licence = lze hostit v EU.</p>
+  <div class="chart-card">
+    <div class="chart-wrap tall">
+      <canvas id="modelsChart"></canvas>
+    </div>
+  </div>
+  <div class="callout green">
+    <strong>Klíčový insight:</strong> Open-weight špička (DeepSeek V4-Pro 80.6, Qwen3.6-Plus 78.8)
+    je dnes <strong>blíž k Claude Opus 4.7 (87.6) než k loňskému Sonnet 4 (~70).</strong>
+    Gap se uzavřel — open-weight nyní dostačuje pro většinu denní práce.
+  </div>
+  <div class="callout amber">
+    <strong>EU AI Act enforcement 2. 8. 2026:</strong> Modely čínského původu (Qwen, DeepSeek, GLM, Kimi)
+    potřebují provenance review — security audit, hash verifikaci vah, air-gapped runtime. Řešitelné, ale počítat
+    se 4-6 týdny právního review.
+  </div>
+</section>
+
+<section id="scenarios">
+  <h2>Scénáře hostingu</h2>
+  <p class="sub">Čtyři jurisdikčně EU varianty (Praha, FI, NL, FR, PL).</p>
+  <div class="grid-4">
+    <div class="card" style="border-color: var(--accent);">
+      <span class="badge blue">A — Pilot + produkce</span>
+      <h3>Nebius Token Factory + Mistral</h3>
+      <div class="num blue">$170-260k</div>
+      <div class="desc"><strong>Ročně</strong> · CapEx $0 · Time-to-launch 2-4 týdny</div>
+      <p style="font-size: 13px; color: var(--fg-muted); margin-top: 12px;">
+        Pay-per-token, OpenAI-compatible, EU region. <strong>Levnější než dnes o $90-230k/rok.</strong>
+      </p>
+    </div>
+    <div class="card" style="border-color: var(--accent-green);">
+      <span class="badge green">B — Po triggeru T-B</span>
+      <h3>Dedikovaný GPU rental</h3>
+      <div class="num green">$410-440k</div>
+      <div class="desc"><strong>Ročně</strong> · CapEx $0 · Time-to-launch 6-10 týdnů</div>
+      <p style="font-size: 13px; color: var(--fg-muted); margin-top: 12px;">
+        4× 8×H200 reserved (Nebius FI / OVHcloud FR). Rovnocenné s baseline, ale strop ceny při růstu.
+      </p>
+    </div>
+    <div class="card">
+      <span class="badge purple">C — 2028+ only-if</span>
+      <h3>On-prem (Praha)</h3>
+      <div class="num" style="color: var(--accent-purple);">$580-625k</div>
+      <div class="desc"><strong>Ročně amort.</strong> · CapEx $2M · TTL 4-7 měsíců</div>
+      <p style="font-size: 13px; color: var(--fg-muted); margin-top: 12px;">
+        Vlastní 4× 8×H200 v Praze. Vyplatí se až při spendu &gt; $600k/rok stabilně.
+      </p>
+    </div>
+    <div class="card" style="border-color: var(--accent-red); opacity: 0.85;">
+      <span class="badge red">D — Nedoporučeno</span>
+      <h3>Hyperscaler EU region</h3>
+      <div class="num red">$300k-2.4M</div>
+      <div class="desc"><strong>Ročně</strong> · CLOUD Act expozice</div>
+      <p style="font-size: 13px; color: var(--fg-muted); margin-top: 12px;">
+        AWS/Azure/GCP EU. Pohodlí, ale CLOUD Act se aplikuje i na ESC — pro DORA/CNB problém.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="costs">
+  <h2>Rozpočtové srovnání</h2>
+  <p class="sub">Vůči současnému spendu $350-450k/rok (~$30-37k/měs) a pesimistické trajektorii $500-700k/rok.</p>
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>Měsíční náklad</h3>
+      <div class="chart-sub">USD/měs, mid-point odhad</div>
+      <div class="chart-wrap">
+        <canvas id="monthlyChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>3-letá TCO</h3>
+      <div class="chart-sub">Kumulativní 3-letá TCO v mil. USD</div>
+      <div class="chart-wrap">
+        <canvas id="tcoChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <table class="compare" style="margin-top: 24px;">
+    <thead>
+      <tr>
+        <th>Scénář</th>
+        <th>Ročně</th>
+        <th>3-letá TCO</th>
+        <th>vs dnešní $400k/rok</th>
+        <th>vs trajektorie $600k/rok</th>
+        <th>CapEx</th>
+        <th>TTL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Status quo (Claude + Codex)</td>
+        <td>$350-450k</td>
+        <td>$1.1-1.4M</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Pesimistická trajektorie</td>
+        <td>$500-700k</td>
+        <td>$1.5-2.1M</td>
+        <td>+25 až +75 %</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>A. EU Serverless</strong> <span class="badge blue">pilot + rollout</span></td>
+        <td>$170-260k</td>
+        <td>$0.5-0.8M</td>
+        <td class="winner">−35 až −58 %</td>
+        <td class="winner">−55 až −72 %</td>
+        <td>$0</td>
+        <td>2-4 týdny</td>
+      </tr>
+      <tr>
+        <td><strong>B. Dedikovaný GPU rental</strong> <span class="badge green">po T-B</span></td>
+        <td>$410-440k</td>
+        <td>$1.2-1.3M</td>
+        <td class="even">±0 až +10 %</td>
+        <td class="winner">−27 až −34 %</td>
+        <td>$0</td>
+        <td>6-10 týdnů</td>
+      </tr>
+      <tr>
+        <td>C. On-prem 4× 8×H200</td>
+        <td>$580-625k</td>
+        <td>$3.0-3.5M + $2M CapEx</td>
+        <td class="loss">+45 až +55 %</td>
+        <td>±0 až +4 %</td>
+        <td>$2.0M</td>
+        <td>4-7 měsíců</td>
+      </tr>
+      <tr>
+        <td>D. Hyperscaler EU</td>
+        <td>$300k-2.4M</td>
+        <td>$1-7M</td>
+        <td>mix</td>
+        <td>mix</td>
+        <td>$0</td>
+        <td>týdny</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="callout green">
+    <strong>Klíčový závěr (v3):</strong> Scénář A je <strong>už dnes ekonomicky výhodnější</strong> než current state
+    o ~$130-200k/rok. Scénář B je rovnocenný a dává cap, jakmile spend poroste. On-prem (C) má smysl až při spendu
+    stabilně přes $600k/rok.
+  </div>
+</section>
+
+<section id="triggers">
+  <h2>Decision triggers — kdy aktivovat kterou fázi</h2>
+  <p class="sub">Měřitelné prahy, které řídí timing scale-upu.</p>
+  <table class="triggers-table">
+    <thead>
+      <tr><th>Trigger</th><th>Status k 2026-05-14</th><th>Akce</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong style="color: var(--accent-green);">T-A:</strong> Spustit Scénář A (pilot)</td>
+        <td><span class="badge green">✅ Splněno</span> ($400k/rok > $250k práh)</td>
+        <td>Spustit pilot 15-30 dev v Q4 2026</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--accent-green);">T-B:</strong> Přejít na Scénář B</td>
+        <td><span class="badge amber">⏳ Pravděpodobně 12-18 měs.</span></td>
+        <td>RFP a kontrakt-ready hned, aktivace po validaci A</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--accent-purple);">T-C:</strong> Aktivovat Scénář C (on-prem)</td>
+        <td><span class="badge red">⏳ Nepravděpodobné v 24 měs.</span></td>
+        <td>Vyhodnotit 2028 podle reálných dat z B</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--accent-amber);">T-reg:</strong> Regulační vynucení</td>
+        <td><span class="badge amber">❓ Vyžaduje DORA gap assessment</span></td>
+        <td>Pokud T-reg padne, T-A/T-B se zrychlí na týdny</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="roadmap">
+  <h2>Fázovaná roadmap</h2>
+  <p class="sub">Pilot Scénáře A → produkční rollout → Scénář B podle T-B → on-prem podle T-C.</p>
+  <div class="chart-card">
+    <div class="roadmap">
+      <div class="head"></div>
+      <div class="head">Q4 2026</div>
+      <div class="head">Q1-Q2 2027</div>
+      <div class="head">Q3-Q4 2027</div>
+      <div class="head">2028+</div>
+
+      <div class="label">Fáze 1<br><span style="color: var(--accent); font-weight:600;">Pilot A</span></div>
+      <div class="bar a">15-30 dev · Nebius + Mistral · LiteLLM gateway · validace kvality / NPS / DORA</div>
+      <div style="grid-column: span 3;"></div>
+
+      <div class="label">Fáze 2<br><span style="color: var(--accent-green); font-weight:600;">Rollout A</span></div>
+      <div></div>
+      <div class="bar a" style="grid-column: span 1;">400 dev · úspora ~$130-200k/rok · hybrid routing</div>
+      <div style="grid-column: span 2;"></div>
+
+      <div class="label">Fáze 3<br><span style="color: var(--accent-green); font-weight:600;">Scénář B</span></div>
+      <div></div>
+      <div></div>
+      <div class="bar b" style="grid-column: span 2;">Aktivace po T-B · 4× 8×H200 reserved · price ceiling + sovereignty</div>
+
+      <div class="label">Fáze 4<br><span style="color: var(--accent-purple); font-weight:600;">Eval C</span></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div class="bar c" style="grid-column: span 1;">Vyhodnocení on-prem · jen pokud spend &gt; $600k/rok</div>
+    </div>
+  </div>
+</section>
+
+<section id="risks">
+  <h2>Rizika a mitigace</h2>
+  <p class="sub">Strategická flexibilita: váhy modelů jsou portovatelné, gateway je vlastní, hybrid zaručuje graceful degradation.</p>
+  <ul class="risk-list">
+    <li>
+      <span class="risk">Anthropic/OpenAI zdraží escalation tier 2-3×</span>
+      <span>Snížit eskalaci v sovereign fázi, posílit GLM-4.7 / Kimi K2.6 jako "near-frontier".</span>
+    </li>
+    <li>
+      <span class="risk">Nebius / EU API zdraží</span>
+      <span>Migrace na dedikovaný GPU rental (Scénář B) — Nebius i OVHcloud nabízejí stejnou cestu. <strong>Váhy modelů jsou portovatelné.</strong></span>
+    </li>
+    <li>
+      <span class="risk">EU AI Act zakáže čínské modely</span>
+      <span>Přepnout primární na Llama 4-Coder (až vyjde) + Codestral. Degradace SWE-Bench ~5-10 bodů.</span>
+    </li>
+    <li>
+      <span class="risk">OVHcloud / Nebius výpadek</span>
+      <span>Multi-region: primary Nebius FI, secondary OVHcloud FR. Gateway routuje automaticky.</span>
+    </li>
+    <li>
+      <span class="risk">Vývojáři nepřijmou kvalitu</span>
+      <span>Pilot odhalí dřív, než se utopí kapitál. Claude Code Max zůstává jako fallback (degradace, ne nahrazení).</span>
+    </li>
+    <li>
+      <span class="risk">MLOps team nestíhá</span>
+      <span>Pilot = serverless, žádný GPU cluster. Scénář B+ externí kontrakt (Nebius / OVHcloud managed inference).</span>
+    </li>
+    <li>
+      <span class="risk">GPU trh zkolabuje, Blackwell zlevní</span>
+      <span>Žádný CapEx ve Fázích 1-2 — flexibilita zachována pro 2028 refresh.</span>
+    </li>
+  </ul>
+</section>
+
+<section id="actions">
+  <h2>Další kroky</h2>
+  <p class="sub">Co je potřeba odstartovat v prvních 12 týdnech pilotu (Fáze 1).</p>
+  <ol class="actions">
+    <li>
+      <strong>AI Gateway (LiteLLM + audit + per-user budgety + prefix-cache aware routing)</strong>
+      <span class="when">Platform team · týdny 1-3</span>
+    </li>
+    <li>
+      <strong>Nebius Token Factory + Mistral La Plateforme kontrakt + DPA + endpoint setup</strong>
+      <span class="when">Procurement + Legal + Platform · týdny 1-4</span>
+    </li>
+    <li>
+      <strong>Spend tracking dashboard + T-B trigger watch</strong>
+      <span class="when">Platform team · týdny 2-3</span>
+    </li>
+    <li>
+      <strong>Legal review čínských modelů vs EU AI Act 2. 8. 2026</strong>
+      <span class="when">Legal + Security · týdny 1-6</span>
+    </li>
+    <li>
+      <strong>Pilot rollout pro 15-30 vývojářů (Claude Code config → gateway endpoint)</strong>
+      <span class="when">DevEx · týdny 4-6</span>
+    </li>
+    <li>
+      <strong>DORA gap assessment pro current state i target state</strong>
+      <span class="when">Compliance · týdny 4-10</span>
+    </li>
+    <li>
+      <strong>Internal SWE-Bench evaluation set (50 reálných úloh)</strong>
+      <span class="when">Platform + engineering · týdny 4-8</span>
+    </li>
+    <li>
+      <strong>RFP pro Scénář B (Nebius reserved + OVHcloud HGX)</strong>
+      <span class="when">Procurement · týdny 8-12</span>
+    </li>
+  </ol>
+</section>
+
+<footer>
+  <p>
+    Strategický návrh připraven pro diskuzi s vedením, procurementem a compliance.
+    Detailní zdroje a citace v souborové verzi
+    <a href="./sovereign-ai-strategy.md">sovereign-ai-strategy.md</a>.
+    Verze v3 · 2026-05-14.
+  </p>
+  <p>
+    Plné MD: SWE-Bench Verified leaderboard · Qwen3-Coder / DeepSeek-V4 / GLM-4.7 / Kimi K2.6 HuggingFace ·
+    Nebius Token Factory pricing · OVHcloud HGX bare-metal · vLLM &amp; SGLang docs ·
+    EAGLE-3 speculative decoding production data · TTC Teleport Prague · IAPP DORA+GDPR guide ·
+    EU AI Act enforcement timeline.
+  </p>
+</footer>
+
+</div>
+
+<script>
+  Chart.defaults.color = '#8b949e';
+  Chart.defaults.borderColor = '#30363d';
+  Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif';
+
+  new Chart(document.getElementById('modelsChart'), {
+    type: 'bar',
+    data: {
+      labels: [
+        'GPT-5.5 (closed)',
+        'Claude Opus 4.7 (closed)',
+        'GPT-5.3-Codex (closed)',
+        'DeepSeek V4-Pro (open, MIT)',
+        'Claude Sonnet 4.6 (closed)',
+        'Qwen3.6-Plus (open, Apache)',
+        'GLM-4.7 (open, MIT)',
+        'Qwen3-Coder-Next 3B (open, Apache)'
+      ],
+      datasets: [{
+        label: 'SWE-Bench Verified (%)',
+        data: [88.7, 87.6, 85.0, 80.6, 79.6, 78.8, 73.8, 70.6],
+        backgroundColor: [
+          '#d29922', '#d29922', '#d29922',
+          '#3fb950',
+          '#d29922',
+          '#3fb950', '#3fb950', '#3fb950'
+        ],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `SWE-Bench Verified: ${ctx.parsed.x}%` } } },
+      scales: {
+        x: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' }, grid: { color: '#21262d' } },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('monthlyChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Dnes', 'Trajektorie 12m', 'A. Serverless', 'B. Dedikovaný', 'C. On-prem (amort.)', 'D. Hyperscaler'],
+      datasets: [{
+        label: 'USD / měs',
+        data: [33, 50, 18, 35.5, 50, 60],
+        backgroundColor: ['#8b949e', '#f85149', '#58a6ff', '#3fb950', '#a371f7', '#f85149'],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `$${ctx.parsed.y}k / měs` } } },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: (v) => '$' + v + 'k' }, grid: { color: '#21262d' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('tcoChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Dnes', 'Trajektorie 12m', 'A. Serverless', 'B. Dedikovaný', 'C. On-prem', 'D. Hyperscaler'],
+      datasets: [{
+        label: '3-letá TCO (mil USD)',
+        data: [1.2, 1.8, 0.65, 1.28, 3.25, 4.0],
+        backgroundColor: ['#8b949e', '#f85149', '#58a6ff', '#3fb950', '#a371f7', '#f85149'],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `$${ctx.parsed.y}M za 3 roky` } } },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: (v) => '$' + v + 'M' }, grid: { color: '#21262d' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+</script>
+</body>
+</html>
